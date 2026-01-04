@@ -1,13 +1,15 @@
-package be.nilsbergs.galileoproject.data
+package be.nilsberghs.galileoproject.data
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Player::class], version = 2, exportSchema = false)
+@Database(entities = [Player::class, Game::class, ScoreEntry::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun playerDao(): PlayerDao
+
+    abstract fun  gameDao(): GameDao
 
     companion object {
         @Volatile

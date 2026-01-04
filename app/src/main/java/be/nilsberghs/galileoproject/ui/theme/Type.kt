@@ -1,4 +1,4 @@
-package be.nilsbergs.galileoproject.ui.theme
+package be.nilsberghs.galileoproject.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

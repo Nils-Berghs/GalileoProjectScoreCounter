@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "be.nilsbergs.galileoproject"
+    namespace = "be.nilsberghs.galileoproject"
     compileSdk = 36
 
     defaultConfig {

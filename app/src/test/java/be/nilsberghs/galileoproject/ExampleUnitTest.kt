@@ -1,4 +1,4 @@
-package be.nilsbergs.galileoproject
+package be.nilsberghs.galileoproject
 
 import org.junit.Test
 

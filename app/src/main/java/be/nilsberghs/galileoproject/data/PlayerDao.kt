@@ -1,4 +1,4 @@
-package be.nilsbergs.galileoproject.data
+package be.nilsberghs.galileoproject.data
 
 import androidx.room.Dao
 import androidx.room.Insert

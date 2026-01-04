@@ -1,4 +1,4 @@
-package be.nilsbergs.galileoproject.data
+package be.nilsberghs.galileoproject.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
