@@ -22,10 +22,10 @@ data class ScoreEntry(
     val callisto: Int = 0,
     val technologies: Int = 0,
     val achievements: Int = 0,
-    val assistents: Int = 0
+    val assistants: Int = 0
 ) {
     // Helper to calculate the total for this player
-    val total: Int get() = io + europa + ganymede + callisto + technologies + achievements + assistents
+    val total: Int get() = io + europa + ganymede + callisto + technologies + achievements + assistants
 }
 
 

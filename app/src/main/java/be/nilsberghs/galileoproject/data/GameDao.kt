@@ -17,6 +17,6 @@ interface GameDao {
     @Update
     suspend fun updateScoreEntry(scoreEntry: ScoreEntry)
 
-    @Query("SELECT * FROM score_entries WHERE gameId = :gameId")
+    @Query("SELECT * FROM scores WHERE gameId = :gameId")
     fun getScoresForGame(gameId: Int): Flow<List<ScoreEntry>>
 }

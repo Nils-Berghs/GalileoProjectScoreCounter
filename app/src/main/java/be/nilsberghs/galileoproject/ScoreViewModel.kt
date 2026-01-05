@@ -4,20 +4,35 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import be.nilsberghs.galileoproject.data.AppDatabase
+import be.nilsberghs.galileoproject.data.Game
 import be.nilsberghs.galileoproject.data.Player
+import be.nilsberghs.galileoproject.data.ScoreEntry
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     private val playerDao = AppDatabase.getDatabase(application).playerDao()
+    private val gameDao = AppDatabase.getDatabase(application).gameDao()
+
     private val _showDeleted = MutableStateFlow(false)
     val showDeleted = _showDeleted.asStateFlow()
 
+    private val _selectedPlayers = MutableStateFlow<List<Player>>(emptyList())
+    val selectedPlayers: StateFlow<List<Player>> = _selectedPlayers.asStateFlow()
+
+    private val _scores = MutableStateFlow<Map<Int, List<Int>>>(emptyMap())
+    val scores = _scores.asStateFlow()
+
+    private  val _currentGameId = MutableStateFlow<Int?>(null)
+    var currentGameId = _currentGameId.asStateFlow()
 
     val allPlayers: StateFlow<List<Player>> = playerDao.getAllPlayers()
         .combine(showDeleted) { players, showDeleted ->
@@ -29,11 +44,14 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
             initialValue = emptyList()
         )
 
-    private val _selectedPlayers = MutableStateFlow<List<Player>>(emptyList())
-    val selectedPlayers: StateFlow<List<Player>> = _selectedPlayers.asStateFlow()
-
-    private val _scores = MutableStateFlow<Map<Int, List<Int>>>(emptyMap())
-    val scores = _scores.asStateFlow()
+    // Observe scores for the current game
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val currentScores: StateFlow<List<ScoreEntry>> = _currentGameId
+        .flatMapLatest { id ->
+            if (id == null) flowOf(emptyList())
+            else gameDao.getScoresForGame(id)
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     /**
      * Persists a new player to the database and automatically adds them
@@ -78,28 +96,44 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         _selectedPlayers.value = current
     }
 
-    fun initGame() {
-        // Associate each selected player's ID with a list of 6 zeros
-        _scores.value = _selectedPlayers.value.associate { player ->
-            player.id to List(6) { 0 }
+    /**
+     * Starts a new game session.
+     * 1. Creates a Game entry.
+     * 2. Creates a ScoreEntry for each selected player.
+     */
+    fun startNewGame() {
+        viewModelScope.launch {
+            val gameId = gameDao.insertGame(Game()).toInt()
+            selectedPlayers.value.forEach { player ->
+                gameDao.insertScoreEntry(ScoreEntry(gameId = gameId, playerId = player.id))
+            }
+            _currentGameId.value = gameId
         }
     }
 
-    fun updateScore(playerId: Int, categoryIndex: Int, newValue: Int) {
-        val currentMap = _scores.value.toMutableMap()
-        // Get the player's current list of 6 scores, or return if not found
-        val playerScores = currentMap[playerId]?.toMutableList() ?: return
-
-        // Update only the specific category
-        playerScores[categoryIndex] = newValue
-
-        // Put it back in the map and update the state
-        currentMap[playerId] = playerScores
-        _scores.value = currentMap
+    /**
+     * Updates a specific category for a player.
+     */
+    fun updateScore(scoreEntry: ScoreEntry, category: String, newValue: Int) {
+        viewModelScope.launch {
+            val updated = when (category) {
+                "io" -> scoreEntry.copy(io = newValue)
+                "europa" -> scoreEntry.copy(europa = newValue)
+                "ganymede" -> scoreEntry.copy(ganymede = newValue)
+                "callisto" -> scoreEntry.copy(callisto = newValue)
+                "tech" -> scoreEntry.copy(technologies = newValue)
+                "achievements" -> scoreEntry.copy(achievements = newValue)
+                "assistants" -> scoreEntry.copy(assistants = newValue)
+                else -> scoreEntry
+            }
+            gameDao.updateScoreEntry(updated)
+        }
     }
 
-    fun getTotalScore(playerId: Int): Int {
-        return _scores.value[playerId]?.sum() ?: 0
+    fun finishGame() {
+        viewModelScope.launch {
+            _currentGameId.value = null
+        }
     }
 
 }

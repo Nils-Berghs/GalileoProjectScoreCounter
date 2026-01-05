@@ -10,7 +10,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "be.nilsbergs.galileoproject"
+        applicationId = "be.nilsberghs.galileoproject"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
