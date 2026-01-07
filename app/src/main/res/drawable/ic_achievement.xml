@@ -1,17 +1,25 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportWidth="100"
+    android:viewportHeight="100">
     <!--
-      This path combines the Medal, the custom Star, and the Ribbon.
-      Note: Viewport is 24x24, center is 12,12.
+      We removed the scale group and increased the viewport to 100x100 
+      to prevent cropping. A simple translation group centers your 
+      Inkscape coordinates (approx -131, -40).
     -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="
-            M 12,1 a 6,6 0 1,0 0,12 a 6,6 0 1,0 0,-12 Z
-            M 12,2.2 a 4.8,4.8 0 1,1 0,9.6 a 4.8,4.8 0 1,1 0,-9.6 Z
-            M 12,2.5 L 13.2,7.5 L 16.8,7.5 L 14,9.5 L 15,11.8 L 12,10.2 L 9,11.8 L 10,9.5 L 7.2,7.5 L 10.8,7.5 Z
-            M 8.8,12 L 15.2,12 L 18.8,23 L 12,19 L 5.2,23 Z" />
+    <group
+        android:translateX="181"
+        android:translateY="80">
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="5"
+            android:pathData="m -104.32523,-46.317455 a 26.829008,26.829008 0 0 1 -26.82901,26.829008 26.829008,26.829008 0 0 1 -26.829,-26.829008 26.829008,26.829008 0 0 1 26.829,-26.829008 26.829008,26.829008 0 0 1 26.82901,26.829008 z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="m -131.15423,-66.15758 13.3845,37.720006 -32.85289,-23.118709 h 38.93678 l -32.85294,23.118709 z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="m -146.86046,-21.896304 -2.5039,7.058594 h 36.41992 l -2.50391,-7.058594 z m -3.59179,10.126954 -1.18164,3.32812 h 40.96093 l -1.18164,-3.32812 z m -2.26954,6.39648 -5.63086,15.86524 13.59962,-5.98828 13.59765,-5.98828 13.59961,5.98828 13.59961,5.98828 -5.62891,-15.86524 z" />
+    </group>
 </vector>

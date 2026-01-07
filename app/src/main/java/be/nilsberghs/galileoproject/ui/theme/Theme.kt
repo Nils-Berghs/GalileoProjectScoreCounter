@@ -19,7 +19,10 @@ private val DarkColorScheme = darkColorScheme(
     background = GalileoDarkBlue,
     surface = GalileoDarkBlue,
     onBackground = Color.White,
-    onSurface = Color.White
+    onSurface = Color.White,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = GalileoDarkBlue
 )
 
 private val LightColorScheme = lightColorScheme(

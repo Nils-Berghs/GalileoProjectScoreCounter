@@ -63,7 +63,7 @@ fun GameScoringScreen(
         CategoryInfo("callisto", null, Icons.Filled.Circle, "Callisto", CallistoBrown),
         CategoryInfo("assistants", R.drawable.ic_assistant, null, "Assistants", null),
         CategoryInfo("tech", R.drawable.ic_tech, null, "Technologies", null),
-        CategoryInfo("achievements", R.drawable.ic_achievement, null, "Achievements", AchievementWhite),
+        CategoryInfo("achievements", R.drawable.ic_achievement, null, "Achievements", MaterialTheme.colorScheme.onBackground),
     )
 
     Column(
