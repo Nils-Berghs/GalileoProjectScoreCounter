@@ -133,7 +133,10 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     fun finishGame() {
         viewModelScope.launch {
             _currentGameId.value = null
+
         }
     }
 
 }
+
+

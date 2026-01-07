@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!--
+      This path combines the Medal, the custom Star, and the Ribbon.
+      Note: Viewport is 24x24, center is 12,12.
+    -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M 12,1 a 6,6 0 1,0 0,12 a 6,6 0 1,0 0,-12 Z
+            M 12,2.2 a 4.8,4.8 0 1,1 0,9.6 a 4.8,4.8 0 1,1 0,-9.6 Z
+            M 12,2.5 L 13.2,7.5 L 16.8,7.5 L 14,9.5 L 15,11.8 L 12,10.2 L 9,11.8 L 10,9.5 L 7.2,7.5 L 10.8,7.5 Z
+            M 8.8,12 L 15.2,12 L 18.8,23 L 12,19 L 5.2,23 Z" />
+</vector>
