@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import be.nilsberghs.galileoproject.data.AppDatabase
 import be.nilsberghs.galileoproject.data.Game
+import be.nilsberghs.galileoproject.data.GameHistory
 import be.nilsberghs.galileoproject.data.Player
 import be.nilsberghs.galileoproject.data.ScoreEntry
+import be.nilsberghs.galileoproject.data.ScoreWithPlayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -22,22 +25,24 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     private val playerDao = AppDatabase.getDatabase(application).playerDao()
     private val gameDao = AppDatabase.getDatabase(application).gameDao()
 
-    private val _showDeleted = MutableStateFlow(false)
-    val showDeleted = _showDeleted.asStateFlow()
-
     private val _selectedPlayers = MutableStateFlow<List<Player>>(emptyList())
     val selectedPlayers: StateFlow<List<Player>> = _selectedPlayers.asStateFlow()
-
-    private val _scores = MutableStateFlow<Map<Int, List<Int>>>(emptyMap())
-    val scores = _scores.asStateFlow()
 
     private  val _currentGameId = MutableStateFlow<Int?>(null)
     var currentGameId = _currentGameId.asStateFlow()
 
+    // History selection
+    private val _selectedHistoryGameId = MutableStateFlow<Int?>(null)
+    val selectedHistoryGameId = _selectedHistoryGameId.asStateFlow()
+
     val allPlayers: StateFlow<List<Player>> = playerDao.getAllPlayers()
-        .combine(showDeleted) { players, showDeleted ->
-            if (showDeleted) players else players.filter { !it.isDeleted }
-        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val activePlayers: StateFlow<List<Player>> = playerDao.getActivePlayers()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -53,6 +58,17 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val historyScores: StateFlow<List<ScoreWithPlayer>> = _selectedHistoryGameId
+        .flatMapLatest { id ->
+            if (id == null) flowOf(emptyList())
+            else gameDao.getScoresWithPlayers(id)
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val fullHistory: StateFlow<List<GameHistory>> = gameDao.getFullHistory()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     /**
      * Persists a new player to the database and automatically adds them
      * to the current selection if the insertion was successful.
@@ -66,18 +82,30 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
                 val newPlayer = Player(id = id.toInt(), name = name)
                 togglePlayerSelection(newPlayer)
             }
+        }
+    }
 
+    fun updatePlayerName(player: Player, newName: String) {
+        viewModelScope.launch {
+            val updatedPlayer = player.copy(name = newName)
+            playerDao.update(updatedPlayer)
+
+            // Fix: If this player was selected, update their object in the selection list
+            val currentSelection = _selectedPlayers.value.toMutableList()
+            val index = currentSelection.indexOfFirst { it.id == player.id }
+            if (index != -1) {
+                currentSelection[index] = updatedPlayer
+                _selectedPlayers.value = currentSelection
+            }
         }
     }
 
     fun deletePlayer(player: Player) {
         viewModelScope.launch {
+            // Remove the player from the selection if they are currently selected
+            _selectedPlayers.value = _selectedPlayers.value.filter { it.id != player.id }
             playerDao.softDeletePlayer(player.id)
         }
-    }
-
-    fun toggleShowDeleted() {
-        _showDeleted.value = !_showDeleted.value
     }
 
     fun restorePlayer(player: Player) {
@@ -96,11 +124,6 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         _selectedPlayers.value = current
     }
 
-    /**
-     * Starts a new game session.
-     * 1. Creates a Game entry.
-     * 2. Creates a ScoreEntry for each selected player.
-     */
     fun startNewGame() {
         viewModelScope.launch {
             val gameId = gameDao.insertGame(Game()).toInt()
@@ -111,9 +134,6 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /**
-     * Updates a specific category for a player.
-     */
     fun updateScore(scoreEntry: ScoreEntry, category: String, newValue: Int) {
         viewModelScope.launch {
             val updated = when (category) {
@@ -133,7 +153,6 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     fun finishGame() {
         viewModelScope.launch {
             _currentGameId.value = null
-
         }
     }
 
@@ -146,14 +165,11 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun selectHistoryGame(gameId: Int?) {
+        _selectedHistoryGameId.value = gameId
+    }
 
-    /**
-     * Checks if the current game has any scores entered.
-     */
     fun hasAnyScores(): Boolean {
         return currentScores.value.any { it.total > 0 }
     }
-
 }
-
-

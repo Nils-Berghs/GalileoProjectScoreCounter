@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,23 +27,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import be.nilsberghs.galileoproject.ui.GameScoringScreen
 import be.nilsberghs.galileoproject.ui.theme.GalileoProjectTheme
+
+enum class Screen {
+    History, NewGame, EditPlayers
+}
 
 class MainActivity : ComponentActivity() {
     private val viewModel: ScoreViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen() // Add this line
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             GalileoProjectTheme {
-
-                // State to control whether the dropdown menu is visible
-                var showMenu by remember { mutableStateOf(false) }
-                // Observe the "show deleted" state from the ViewModel
-                val isShowingDeleted by viewModel.showDeleted.collectAsState()
+                var currentScreen by remember { mutableStateOf(Screen.NewGame) }
                 var showAddDialog by remember { mutableStateOf(false) }
                 val currentGameId by viewModel.currentGameId.collectAsState()
 
@@ -49,39 +52,49 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         TopAppBar(
-                            title = { Text("Galileo Project") },
+                            title = {
+                                Text(
+                                    when (currentScreen) {
+                                        Screen.History -> "Game History"
+                                        Screen.NewGame -> "Start New Game"
+                                        Screen.EditPlayers -> "Manage Players"
+                                    }
+                                )
+                            },
                             actions = {
-                                if (currentGameId == null) {
+                                if (currentGameId == null && currentScreen == Screen.NewGame) {
                                     IconButton(onClick = { showAddDialog = true }) {
                                         Icon(Icons.Default.Add, contentDescription = "Add Player")
-                                    }
-                                    IconButton(onClick = { showMenu = true }) {
-                                        Icon(
-                                            imageVector = Icons.Default.MoreVert,
-                                            contentDescription = "Options"
-                                        )
-                                    }
-                                    DropdownMenu(
-                                        expanded = showMenu,
-                                        onDismissRequest = { showMenu = false }
-                                    ) {
-                                        DropdownMenuItem(
-                                            text = {
-                                                Text(if (isShowingDeleted) "Hide Deleted" else "Show Deleted")
-                                            },
-                                            onClick = {
-                                                viewModel.toggleShowDeleted()
-                                                showMenu = false
-                                            }
-                                        )
                                     }
                                 }
                             }
                         )
                     },
-
+                    bottomBar = {
+                        if (currentGameId == null) {
+                            NavigationBar {
+                                NavigationBarItem(
+                                    selected = currentScreen == Screen.History,
+                                    onClick = { currentScreen = Screen.History },
+                                    icon = { Icon(Icons.Default.History, contentDescription = null) },
+                                    label = { Text("History") }
+                                )
+                                NavigationBarItem(
+                                    selected = currentScreen == Screen.NewGame,
+                                    onClick = { currentScreen = Screen.NewGame },
+                                    icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
+                                    label = { Text("New Game") }
+                                )
+                                NavigationBarItem(
+                                    selected = currentScreen == Screen.EditPlayers,
+                                    onClick = { currentScreen = Screen.EditPlayers },
+                                    icon = { Icon(Icons.Default.People, contentDescription = null) },
+                                    label = { Text("Players") }
+                                )
+                            }
+                        }
+                    }
                 ) { innerPadding ->
-
                     if (showAddDialog) {
                         AddPlayerDialog(
                             onDismiss = { showAddDialog = false },
@@ -89,15 +102,30 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    val currentGameId by viewModel.currentGameId.collectAsState()
                     if (currentGameId == null) {
-                        PlayerSelectionScreen(
+                        when (currentScreen) {
+                            Screen.History -> {
+                                    HistoryScreen(
+                                        viewModel = viewModel,
+                                        modifier = Modifier.padding(innerPadding)
+                                    )
+                            }
+                            Screen.NewGame -> PlayerSelectionScreen(
+                                viewModel = viewModel,
+                                onStartGame = { viewModel.startNewGame() },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                            Screen.EditPlayers -> EditPlayersScreen(
+                                viewModel = viewModel,
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
+                    } else {
+                        GameScoringScreen(
                             viewModel = viewModel,
-                            onStartGame = { viewModel.startNewGame() },
+                            onFinishGame = viewModel::finishGame,
                             modifier = Modifier.padding(innerPadding)
                         )
-                    } else {
-                        GameScoringScreen(viewModel, viewModel::finishGame, Modifier.padding(innerPadding) )
                     }
                 }
             }
