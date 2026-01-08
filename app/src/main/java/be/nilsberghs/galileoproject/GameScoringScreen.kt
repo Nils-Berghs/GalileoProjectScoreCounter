@@ -112,16 +112,24 @@ fun GameScoringScreen(
                         .padding(4.dp) // Internal icon padding
                 )
 
-                scores.forEach { scoreEntry ->
-                    ScoreInputCell(
-                        value = getVal(scoreEntry, cat.id),
-                        onValueChange = { newValue ->
-                            viewModel.updateScore(scoreEntry, cat.id, newValue)
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                    )
+                players.forEach { player ->
+                    // Find the score entry for this player
+                    val scoreEntry = scores.find { it.playerId == player.id }
+
+                    if (scoreEntry != null) {
+                        ScoreInputCell(
+                            value = getVal(scoreEntry, cat.id),
+                            onValueChange = { newValue ->
+                                viewModel.updateScore(scoreEntry, cat.id, newValue)
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                        )
+                    } else {
+                        // Placeholder with same weight to prevent jumping
+                        Spacer(Modifier.weight(1f))
+                    }
                 }
             }
         }
@@ -136,9 +144,10 @@ fun GameScoringScreen(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
-            scores.forEach { scoreEntry ->
+            players.forEach { player ->
+                val scoreEntry = scores.find { it.playerId == player.id }
                 Text(
-                    text = scoreEntry.total.toString(),
+                    text = scoreEntry?.total?.toString() ?: "0",
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
