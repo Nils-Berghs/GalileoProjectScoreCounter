@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "scores",
     foreignKeys = [
-        ForeignKey(entity = Game::class, parentColumns = ["id"], childColumns = ["gameId"]),
+        ForeignKey(entity = Game::class, parentColumns = ["id"], childColumns = ["gameId"], onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = Player::class, parentColumns = ["id"], childColumns = ["playerId"])
     ]
 )

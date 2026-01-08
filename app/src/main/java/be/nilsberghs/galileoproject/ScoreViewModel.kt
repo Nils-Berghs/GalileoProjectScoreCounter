@@ -137,6 +137,23 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun cancelGame() {
+        viewModelScope.launch {
+            _currentGameId.value?.let { gameId ->
+                gameDao.deleteGameById(gameId)
+            }
+            _currentGameId.value = null
+        }
+    }
+
+
+    /**
+     * Checks if the current game has any scores entered.
+     */
+    fun hasAnyScores(): Boolean {
+        return currentScores.value.any { it.total > 0 }
+    }
+
 }
 
 

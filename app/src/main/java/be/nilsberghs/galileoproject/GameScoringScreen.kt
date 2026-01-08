@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
@@ -38,12 +37,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.BackHandler
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import be.nilsberghs.galileoproject.data.ScoreEntry
-import be.nilsberghs.galileoproject.ui.theme.AchievementWhite
 import be.nilsberghs.galileoproject.ui.theme.CallistoBrown
 import be.nilsberghs.galileoproject.ui.theme.EuropaYellow
-import be.nilsberghs.galileoproject.ui.theme.GalileoPink
-import be.nilsberghs.galileoproject.ui.theme.GalileoPurple
 import be.nilsberghs.galileoproject.ui.theme.GanymedeGrey
 import be.nilsberghs.galileoproject.ui.theme.IoOrange
 
@@ -55,6 +54,37 @@ fun GameScoringScreen(
 ) {
     val scores by viewModel.currentScores.collectAsState()
     val players by viewModel.selectedPlayers.collectAsState()
+    var showCancelDialog by remember { mutableStateOf(false) }
+
+    //Handle back key
+    BackHandler {
+        if (viewModel.hasAnyScores()) {
+            showCancelDialog = true
+        } else {
+            viewModel.cancelGame()
+        }
+    }
+
+    if (showCancelDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = { Text("Cancel Game?") },
+            text = { Text("You have entered scores. Are you sure you want to cancel this game? All entered scores will be lost.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showCancelDialog = false
+                    viewModel.cancelGame()
+                }) {
+                    Text("Cancel Game")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCancelDialog = false }) {
+                    Text("Keep Scoring")
+                }
+            }
+        )
+    }
 
     val categories = listOf(
         CategoryInfo("io", null, Icons.Filled.Circle, "Io", IoOrange),
