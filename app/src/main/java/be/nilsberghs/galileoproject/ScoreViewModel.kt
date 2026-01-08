@@ -165,6 +165,13 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun deleteHistoryGame(gameId: Int) {
+        viewModelScope.launch {
+            gameDao.deleteGameById(gameId)
+            _selectedHistoryGameId.value = null
+        }
+    }
+
     fun selectHistoryGame(gameId: Int?) {
         _selectedHistoryGameId.value = gameId
     }

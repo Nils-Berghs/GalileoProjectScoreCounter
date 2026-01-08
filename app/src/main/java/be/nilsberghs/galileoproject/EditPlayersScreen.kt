@@ -67,8 +67,6 @@ fun EditPlayersScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text(text = "Manage Players", style = MaterialTheme.typography.headlineMedium)
-            Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(allPlayers) { player ->

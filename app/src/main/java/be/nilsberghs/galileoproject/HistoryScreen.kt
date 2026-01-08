@@ -64,8 +64,6 @@ fun HistoryScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text(text = "Previous Games", style = MaterialTheme.typography.headlineMedium)
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(games) { history ->

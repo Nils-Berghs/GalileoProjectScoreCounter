@@ -39,8 +39,6 @@ fun PlayerSelectionScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "Select Players (Max 4)", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(activePlayers) { player ->
