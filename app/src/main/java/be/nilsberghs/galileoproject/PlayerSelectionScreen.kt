@@ -102,7 +102,7 @@ fun PlayerSelectionScreen(
         Button(
             onClick = onStartGame,
             modifier = Modifier.fillMaxWidth(),
-            enabled = selectedPlayers.isNotEmpty()
+            enabled = selectedPlayers.size in 2..4
         ) {
             Text(text = "Start Game (${selectedPlayers.size}/4)")
         }

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1F2654</item> <!-- Your Galileo Blue -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.GalileoProject</item> <!-- Your main theme -->
+    </style>
     <style name="Theme.GalileoProject" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
