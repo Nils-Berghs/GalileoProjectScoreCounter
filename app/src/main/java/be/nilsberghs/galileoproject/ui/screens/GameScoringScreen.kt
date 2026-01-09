@@ -113,13 +113,13 @@ fun GameScoringContent(
     isReadOnly: Boolean = false
 ) {
     val categories = listOf(
-        CategoryInfo("io", null, Icons.Filled.Circle, stringResource(R.string.cat_io), IoOrange),
-        CategoryInfo("europa", null, Icons.Filled.Circle, stringResource(R.string.cat_europa), EuropaYellow),
-        CategoryInfo("ganymede", null, Icons.Filled.Circle, stringResource(R.string.cat_ganymede), GanymedeGrey),
-        CategoryInfo("callisto", null, Icons.Filled.Circle, stringResource(R.string.cat_callisto), CallistoBrown),
-        CategoryInfo("assistants", R.drawable.ic_assistant, null, stringResource(R.string.cat_assistants), null),
-        CategoryInfo("tech", R.drawable.ic_tech, null, stringResource(R.string.cat_tech), null),
-        CategoryInfo("achievements", R.drawable.ic_achievement, null, stringResource(R.string.cat_achievements), MaterialTheme.colorScheme.onBackground),
+        CategoryInfo("io", R.drawable.ic_io, stringResource(R.string.cat_io), null),
+        CategoryInfo("europa", R.drawable.ic_europa, stringResource(R.string.cat_europa), null),
+        CategoryInfo("ganymede", R.drawable.ic_ganymede, stringResource(R.string.cat_ganymede), null),
+        CategoryInfo("callisto", R.drawable.ic_callisto, stringResource(R.string.cat_callisto), null),
+        CategoryInfo("assistants", R.drawable.ic_assistant, stringResource(R.string.cat_assistants), null),
+        CategoryInfo("tech", R.drawable.ic_tech, stringResource(R.string.cat_tech), null),
+        CategoryInfo("achievements", R.drawable.ic_achievement, stringResource(R.string.cat_achievements), MaterialTheme.colorScheme.onBackground),
     )
 
     Column(
@@ -150,20 +150,17 @@ fun GameScoringContent(
                     .height(IntrinsicSize.Min)
                     .padding(vertical = 2.dp)
             ) {
-                val iconPainter = if (cat.resId != null) {
-                    painterResource(id = cat.resId)
-                } else {
-                    rememberVectorPainter(image = cat.vector!!)
-                }
+                val iconPainter = painterResource(id = cat.resId)
 
                 Icon(
                     painter = iconPainter,
                     contentDescription = cat.name,
                     tint = cat.color ?: Color.Unspecified,
                     modifier = Modifier
-                        .weight(0.7f)
-                        .fillMaxHeight()
-                        .padding(4.dp)
+                        .size(40.dp)
+                        .weight(0.6f)
+                        //.fillMaxHeight(32.dp)
+
                 )
 
                 players.forEach { player ->
@@ -275,8 +272,7 @@ private fun getVal(entry: ScoreEntry, id: String) = when (id) {
 
 data class CategoryInfo(
     val id: String,
-    val resId: Int?,
-    val vector: ImageVector?,
+    val resId: Int,
     val name: String,
     val color: Color?
 )
