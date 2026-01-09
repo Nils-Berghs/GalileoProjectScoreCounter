@@ -1,4 +1,4 @@
-package be.nilsberghs.galileoproject.ui
+package be.nilsberghs.galileoproject.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
@@ -46,11 +46,8 @@ import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
 import be.nilsberghs.galileoproject.data.Player
 import be.nilsberghs.galileoproject.data.ScoreEntry
-import be.nilsberghs.galileoproject.ui.theme.AchievementWhite
 import be.nilsberghs.galileoproject.ui.theme.CallistoBrown
 import be.nilsberghs.galileoproject.ui.theme.EuropaYellow
-import be.nilsberghs.galileoproject.ui.theme.GalileoPink
-import be.nilsberghs.galileoproject.ui.theme.GalileoPurple
 import be.nilsberghs.galileoproject.ui.theme.GanymedeGrey
 import be.nilsberghs.galileoproject.ui.theme.IoOrange
 

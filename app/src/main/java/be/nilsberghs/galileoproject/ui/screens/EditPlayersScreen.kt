@@ -1,4 +1,4 @@
-package be.nilsberghs.galileoproject
+package be.nilsberghs.galileoproject.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import be.nilsberghs.galileoproject.ScoreViewModel
 import be.nilsberghs.galileoproject.data.Player
+import be.nilsberghs.galileoproject.ui.components.AddPlayerDialog
+import be.nilsberghs.galileoproject.ui.components.EditPlayerDialog
 
 @Composable
 fun EditPlayersScreen(
@@ -40,7 +43,6 @@ fun EditPlayersScreen(
 ) {
     val allPlayers by viewModel.allPlayers.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
-    // Replace showEditDialog with this:
     var editingPlayer by remember { mutableStateOf<Player?>(null) }
 
     if (showAddDialog) {
@@ -52,7 +54,7 @@ fun EditPlayersScreen(
 
     editingPlayer?.let { player ->
         EditPlayerDialog(
-            player = player, // Pass the player object
+            player = player,
             onDismiss = { editingPlayer = null },
             onConfirm = { newName ->
                 viewModel.updatePlayerName(player, newName)

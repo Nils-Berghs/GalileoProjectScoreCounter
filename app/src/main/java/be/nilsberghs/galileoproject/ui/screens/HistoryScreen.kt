@@ -1,11 +1,9 @@
-package be.nilsberghs.galileoproject
+package be.nilsberghs.galileoproject.ui.screens
 
-import android.text.format.DateFormat
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,7 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import be.nilsberghs.galileoproject.ui.GameScoringContent
+import be.nilsberghs.galileoproject.ScoreViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -62,9 +60,8 @@ fun HistoryScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
         ) {
-
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(games) { history ->
                     Card(
@@ -84,7 +81,6 @@ fun HistoryScreen(
                                 .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Left Side: Winner Info or Warning
                             Column(modifier = Modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (isInvalidGame) {
@@ -132,16 +128,10 @@ fun HistoryScreen(
                                 }
                             }
 
-                            // Right Side: Game ID and Date
                             Column(horizontalAlignment = Alignment.End) {
-                                Text(
-                                    text = "Game #${history.game.id}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
                                 val formattedDate = dateTimeFormatter.format(Date(history.game.startTime))
                                 Text(
-                                    text = formattedDate,
+                                    text = "Game #${history.game.id} • $formattedDate",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

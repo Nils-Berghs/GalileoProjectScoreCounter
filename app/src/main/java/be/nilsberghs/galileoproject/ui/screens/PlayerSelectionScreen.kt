@@ -1,4 +1,4 @@
-package be.nilsberghs.galileoproject
+package be.nilsberghs.galileoproject.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import be.nilsberghs.galileoproject.ScoreViewModel
 
 @Composable
 fun PlayerSelectionScreen(
@@ -28,18 +29,14 @@ fun PlayerSelectionScreen(
     onStartGame: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val allPlayers by viewModel.activePlayers.collectAsState()
+    val activePlayers by viewModel.activePlayers.collectAsState()
     val selectedPlayers by viewModel.selectedPlayers.collectAsState()
-
-    // On this screen, we only show players that are NOT deleted
-    val activePlayers = allPlayers.filter { !it.isDeleted }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(activePlayers) { player ->
                 val isSelected = selectedPlayers.contains(player)
