@@ -14,8 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import be.nilsberghs.galileoproject.R
 
 @Composable
 fun AddPlayerDialog(
@@ -33,12 +35,12 @@ fun AddPlayerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add New Player") },
+        title = { Text(stringResource(R.string.dialog_add_player_title)) },
         text = {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Player Name") },
+                label = { Text(stringResource(R.string.label_player_name)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
@@ -52,10 +54,10 @@ fun AddPlayerDialog(
             Button(
                 onClick = onAdd,
                 enabled = name.isNotBlank()
-            ) { Text("Add") }
+            ) { Text(stringResource(R.string.action_add)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         }
     )
 }

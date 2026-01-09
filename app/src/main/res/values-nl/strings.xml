@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Galileo Project</string>
+    <string name="nav_history">Historiek</string>
+    <string name="nav_new_game">Nieuw Spel</string>
+    <string name="nav_players">Spelers</string>
+    <string name="title_previous_games">Vorige Spellen</string>
+    <string name="title_game_detail">Spel Details</string>
+    <string name="title_select_players">Selecteer Spelers (max 4)</string>
+    <string name="title_game_scoring">Score</string>
+    <string name="title_manage_players">Spelersbeheer</string>
+    <string name="title_settings">Instellingen</string>
+    <string name="dialog_add_player_title">Voeg nieuwe speler toe</string>
+    <string name="dialog_edit_player_title">Bewerk Speler</string>
+    <string name="dialog_delete_game_title">Spel Verwijderen?</string>
+    <string name="dialog_delete_game_message">Bent u zeker dat u dit spel wilt verwijderen? Dit kan niet ongedaan gemaakt worden.</string>
+    <string name="dialog_cancel_game_title">Spel Annuleren?</string>
+    <string name="dialog_cancel_game_message">Er werden reeds scores ingegeven, bent u zeker dat u dit spel wilt annuleren? Alle ingegeven scores zullen verloren gaan.</string>
+    <string name="label_player_name">Spelersnaam</string>
+    <string name="action_add">Toevoegen</string>
+    <string name="action_cancel">Annuleren</string>
+    <string name="action_delete">Verwijderen</string>
+    <string name="action_ok">OK</string>
+    <string name="action_keep_scoring">Score vervolledigen</string>
+    <string name="cat_assistants">Assistenten</string>
+    <string name="cat_tech">Technologieën</string>
+    <string name="cat_achievements">Doelen</string>
+    <string name="label_game_number">Spel #%1$d</string>
+    <string name="label_pts">%1$d punten</string>
+    <string name="label_unknown">Onbekend</string>
+    <string name="label_winner">Winnaar</string>
+    <string name="action_start_game">Start Spel (%1$d/4)</string>
+    <string name="action_finish_game">Spel Afsluiten</string>
+    <string name="action_back">Terug</string>
+    <string name="desc_restore_player">Speler Herstellen</string>
+    <string name="desc_edit_player">Speler Bewerken</string>
+    <string name="desc_delete_player">Speler Vewijderen</string>
+    <string name="desc_add_player">Speler Toevoegen</string>
+    <string name="desc_settings">Instellingen</string>
+    <string name="label_language">Taal</string>
+    <string name="lang_en">English</string>
+    <string name="lang_nl">Nederlands</string>
+</resources>

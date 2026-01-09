@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,8 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
 import be.nilsberghs.galileoproject.data.Player
 import be.nilsberghs.galileoproject.ui.components.AddPlayerDialog
@@ -88,18 +89,18 @@ fun EditPlayersScreen(
                             IconButton(
                                 onClick = { viewModel.restorePlayer(player) },
                             ) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Restore Player")
+                                Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.desc_restore_player))
                             }
                         } else {
                             IconButton(
                                 onClick = { editingPlayer = player }
                             ) {
-                                Icon(Icons.Default.Edit, contentDescription = "Edit Player")
+                                Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.desc_edit_player))
                             }
                             IconButton(
                                 onClick = { viewModel.deletePlayer(player) }
                             ) {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete Player")
+                                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.desc_delete_player))
                             }
                         }
                     }
@@ -114,7 +115,7 @@ fun EditPlayersScreen(
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Add Player")
+            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.desc_add_player))
         }
     }
 }

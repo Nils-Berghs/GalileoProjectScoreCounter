@@ -19,7 +19,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
 
 @Composable
@@ -70,7 +72,7 @@ fun PlayerSelectionScreen(
             modifier = Modifier.fillMaxWidth(),
             enabled = selectedPlayers.size in 2..4
         ) {
-            Text(text = "Start Game (${selectedPlayers.size}/4)")
+            Text(text = stringResource(R.string.action_start_game, selectedPlayers.size))
         }
     }
 }

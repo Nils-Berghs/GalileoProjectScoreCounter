@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -72,19 +73,19 @@ fun GameScoringScreen(
     if (showCancelDialog) {
         AlertDialog(
             onDismissRequest = { showCancelDialog = false },
-            title = { Text("Cancel Game?") },
-            text = { Text("You have entered scores. Are you sure you want to cancel this game? All entered scores will be lost.") },
+            title = { Text(stringResource(R.string.dialog_cancel_game_title)) },
+            text = { Text(stringResource(R.string.dialog_cancel_game_message)) },
             confirmButton = {
                 TextButton(onClick = {
                     showCancelDialog = false
                     viewModel.cancelGame()
                 }) {
-                    Text("Cancel Game")
+                    Text(stringResource(R.string.action_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCancelDialog = false }) {
-                    Text("Keep Scoring")
+                    Text(stringResource(R.string.action_keep_scoring))
                 }
             }
         )
@@ -111,13 +112,13 @@ fun GameScoringContent(
     isReadOnly: Boolean = false
 ) {
     val categories = listOf(
-        CategoryInfo("io", null, Icons.Filled.Circle, "Io", IoOrange),
-        CategoryInfo("europa", null, Icons.Filled.Circle, "Europa", EuropaYellow),
-        CategoryInfo("ganymede", null, Icons.Filled.Circle, "Ganymede", GanymedeGrey),
-        CategoryInfo("callisto", null, Icons.Filled.Circle, "Callisto", CallistoBrown),
-        CategoryInfo("assistants", R.drawable.ic_assistant, null, "Assistants", null),
-        CategoryInfo("tech", R.drawable.ic_tech, null, "Technologies", null),
-        CategoryInfo("achievements", R.drawable.ic_achievement, null, "Achievements", MaterialTheme.colorScheme.onBackground),
+        CategoryInfo("io", null, Icons.Filled.Circle, stringResource(R.string.cat_io), IoOrange),
+        CategoryInfo("europa", null, Icons.Filled.Circle, stringResource(R.string.cat_europa), EuropaYellow),
+        CategoryInfo("ganymede", null, Icons.Filled.Circle, stringResource(R.string.cat_ganymede), GanymedeGrey),
+        CategoryInfo("callisto", null, Icons.Filled.Circle, stringResource(R.string.cat_callisto), CallistoBrown),
+        CategoryInfo("assistants", R.drawable.ic_assistant, null, stringResource(R.string.cat_assistants), null),
+        CategoryInfo("tech", R.drawable.ic_tech, null, stringResource(R.string.cat_tech), null),
+        CategoryInfo("achievements", R.drawable.ic_achievement, null, stringResource(R.string.cat_achievements), MaterialTheme.colorScheme.onBackground),
     )
 
     Column(
@@ -190,7 +191,7 @@ fun GameScoringContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = Icons.Default.DragHandle,
-                contentDescription = "Total",
+                contentDescription = stringResource(R.string.nav_history),
                 modifier = Modifier
                     .weight(0.7f)
                     .size(24.dp),
@@ -210,7 +211,6 @@ fun GameScoringContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Check if all players have a total > 0
         val canFinish = isReadOnly || (scores.isNotEmpty() && scores.all { it.total > 0 })
 
         Button(
@@ -218,7 +218,7 @@ fun GameScoringContent(
             modifier = Modifier.fillMaxWidth(),
             enabled = canFinish
         ) {
-            Text(if (isReadOnly) "Back" else "Finish Game")
+            Text(if (isReadOnly) stringResource(R.string.action_back) else stringResource(R.string.action_finish_game))
         }
     }
 }

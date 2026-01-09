@@ -24,9 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -86,12 +88,12 @@ fun HistoryScreen(
                                     if (isInvalidGame) {
                                         Icon(
                                             imageVector = Icons.Default.Warning,
-                                            contentDescription = "Unknown",
+                                            contentDescription = stringResource(R.string.label_unknown),
                                             tint = MaterialTheme.colorScheme.error,
                                             modifier = Modifier.size(24.dp).padding(end = 8.dp)
                                         )
                                         Text(
-                                            text = "Unknown",
+                                            text = stringResource(R.string.label_unknown),
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.error
@@ -99,7 +101,7 @@ fun HistoryScreen(
                                     } else {
                                         Icon(
                                             imageVector = Icons.Default.EmojiEvents,
-                                            contentDescription = "Winner",
+                                            contentDescription = stringResource(R.string.label_winner),
                                             tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(24.dp).padding(end = 8.dp)
                                         )
@@ -119,7 +121,7 @@ fun HistoryScreen(
                                                 fontWeight = FontWeight.Bold
                                             )
                                             Text(
-                                                text = " (${winner.score.total} pts)",
+                                                text = " " + stringResource(R.string.label_pts, winner.score.total),
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
@@ -131,10 +133,16 @@ fun HistoryScreen(
                             Column(horizontalAlignment = Alignment.End) {
                                 val formattedDate = dateTimeFormatter.format(Date(history.game.startTime))
                                 Text(
-                                    text = "Game #${history.game.id} • $formattedDate",
+                                    text = formattedDate,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                                Text(
+                                    text = stringResource(R.string.label_game_number, history.game.id),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+
                             }
                         }
                     }
