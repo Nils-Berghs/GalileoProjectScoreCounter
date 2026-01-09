@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.isEmpty
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -234,10 +235,13 @@ fun ScoreInputCell(
 
     TextField(
         value = textValue,
-        onValueChange = {
-            if (it.isEmpty() || it.toIntOrNull() != null) {
-                textValue = it
-                onValueChange(it.toIntOrNull() ?: 0)
+        onValueChange = { it ->
+            if (it.isEmpty()) {
+                onValueChange(0)
+            } else {
+                it.toIntOrNull()?.let { newValue ->
+                    onValueChange(newValue) // The ViewModel will coerce this to 18
+                }
             }
         },
         enabled = enabled,

@@ -1,7 +1,9 @@
 package be.nilsberghs.galileoproject
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import be.nilsberghs.galileoproject.data.AppDatabase
@@ -27,12 +29,19 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     private val LOGTAG = "ScoreViewModel"
     private val playerDao = AppDatabase.getDatabase(application).playerDao()
     private val gameDao = AppDatabase.getDatabase(application).gameDao()
+    private val prefs = application.getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+    private val _isInitializing = MutableStateFlow(true)
+    val isInitializing = _isInitializing.asStateFlow()
 
     private val _selectedPlayers = MutableStateFlow<List<Player>>(emptyList())
     val selectedPlayers: StateFlow<List<Player>> = _selectedPlayers.asStateFlow()
 
     private  val _currentGameId = MutableStateFlow<Int?>(null)
     var currentGameId = _currentGameId.asStateFlow()
+
+    private val _themeMode = MutableStateFlow(prefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
+    val themeMode = _themeMode.asStateFlow()
 
     // History selection
     private val _selectedHistoryGameId = MutableStateFlow<Int?>(null)
@@ -80,6 +89,10 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
+        // Apply the saved theme mode to the system immediately
+        // TODO system default flashes briefly
+        AppCompatDelegate.setDefaultNightMode(_themeMode.value)
+
         viewModelScope.launch {
             try {
                 Log.d(LOGTAG, "Checking for unfinished games...")
@@ -105,8 +118,16 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 Log.e(LOGTAG, "Error in init", e)
+            } finally {
+                _isInitializing.value = false
             }
         }
+    }
+
+    fun setThemeMode(mode: Int) {
+        _themeMode.value = mode
+        prefs.edit().putInt("theme_mode", mode).apply()
+        AppCompatDelegate.setDefaultNightMode(mode)
     }
 
     fun addPlayerToDatabase(name: String) {

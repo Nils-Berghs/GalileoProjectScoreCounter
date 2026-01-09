@@ -25,10 +25,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
 import be.nilsberghs.galileoproject.R
+import be.nilsberghs.galileoproject.ScoreViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    viewModel: ScoreViewModel,
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
@@ -136,7 +138,7 @@ fun SettingsScreen(
                     DropdownMenuItem(
                         text = { Text(name) },
                         onClick = {
-                            AppCompatDelegate.setDefaultNightMode(mode)
+                            viewModel.setThemeMode(mode)
                             themeExpanded = false
                         }
                     )

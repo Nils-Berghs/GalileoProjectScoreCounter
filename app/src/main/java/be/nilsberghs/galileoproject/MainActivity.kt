@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
                             when (currentScreen) {
                                 Screen.History -> HistoryScreen(viewModel, modifier = Modifier)
                                 Screen.EditPlayers -> EditPlayersScreen(viewModel, modifier = Modifier)
-                                Screen.Settings -> SettingsScreen(modifier = Modifier)
+                                Screen.Settings -> SettingsScreen(viewModel, modifier = Modifier, )
                                 Screen.NewGame -> {
                                     if (currentGameId == null) {
                                         PlayerSelectionScreen(
