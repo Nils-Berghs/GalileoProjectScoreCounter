@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -186,14 +188,16 @@ fun GameScoringContent(
             }
         }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                "Σ",
-                modifier = Modifier.weight(0.7f),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
+            Icon(
+                imageVector = Icons.Default.DragHandle,
+                contentDescription = "Total",
+                modifier = Modifier
+                    .weight(0.7f)
+                    .size(24.dp),
+                tint = MaterialTheme.colorScheme.onSurface
             )
             players.forEach { player ->
                 val scoreEntry = scores.find { it.playerId == player.id }
@@ -202,7 +206,7 @@ fun GameScoringContent(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.headlineSmall
                 )
             }
         }

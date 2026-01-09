@@ -169,13 +169,15 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     fun updateScore(scoreEntry: ScoreEntry, category: String, newValue: Int) {
         viewModelScope.launch {
             val updated = when (category) {
-                "io" -> scoreEntry.copy(io = newValue)
-                "europa" -> scoreEntry.copy(europa = newValue)
-                "ganymede" -> scoreEntry.copy(ganymede = newValue)
-                "callisto" -> scoreEntry.copy(callisto = newValue)
-                "tech" -> scoreEntry.copy(technologies = newValue)
-                "achievements" -> scoreEntry.copy(achievements = newValue)
-                "assistants" -> scoreEntry.copy(assistants = newValue)
+                "io" -> scoreEntry.copy(io = newValue.coerceIn(0, 18))
+                "europa" -> scoreEntry.copy(europa = newValue.coerceIn(0, 12))
+                "ganymede" -> scoreEntry.copy(ganymede = newValue.coerceIn(0, 18))
+                //no hard limit on callisto, but if you somehow manage to play up to 12 robots and they are all of hte same type you could score 48 points
+                "callisto" -> scoreEntry.copy(callisto = newValue.coerceIn(0, 48))
+                "tech" -> scoreEntry.copy(technologies = newValue.coerceIn(0, 8))
+                "achievements" -> scoreEntry.copy(achievements = newValue.coerceIn(0, 20))
+                // max 6 assistants, if you score 5 point per assistant that would be 30
+                "assistants" -> scoreEntry.copy(assistants = newValue.coerceIn(0,30))
                 else -> scoreEntry
             }
             gameDao.updateScoreEntry(updated)
