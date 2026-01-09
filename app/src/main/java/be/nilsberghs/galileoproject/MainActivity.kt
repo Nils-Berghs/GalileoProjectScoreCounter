@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()
-                            .alpha(0.12f),
+                            .alpha(0.22f),
                         contentScale = ContentScale.Crop
                     )
 
