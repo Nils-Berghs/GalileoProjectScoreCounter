@@ -2,8 +2,10 @@ package be.nilsberghs.galileoproject.ui.screens
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +32,6 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
-    // Get the current active language (e.g., "en" or "nl")
     val currentActiveLanguage = configuration.locales[0].language
 
     Column(
@@ -38,6 +39,7 @@ fun SettingsScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // --- Language Selection ---
         Text(
             text = stringResource(R.string.label_language),
             style = MaterialTheme.typography.titleMedium,
@@ -49,15 +51,14 @@ fun SettingsScreen(
             "nl" to stringResource(R.string.lang_nl)
         )
 
-        // Find the display name based on the actual active language
         val currentLanguageName = languages.find { it.first == currentActiveLanguage }?.second 
             ?: languages.first().second
 
-        var expanded by remember { mutableStateOf(false) }
+        var langExpanded by remember { mutableStateOf(false) }
 
         ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
+            expanded = langExpanded,
+            onExpandedChange = { langExpanded = it },
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
@@ -65,7 +66,7 @@ fun SettingsScreen(
                 onValueChange = {},
                 readOnly = true,
                 label = { Text(stringResource(R.string.label_language)) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = langExpanded) },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                 modifier = Modifier
                     .menuAnchor()
@@ -73,8 +74,8 @@ fun SettingsScreen(
             )
 
             ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+                expanded = langExpanded,
+                onDismissRequest = { langExpanded = false }
             ) {
                 languages.forEach { (tag, name) ->
                     DropdownMenuItem(
@@ -82,7 +83,61 @@ fun SettingsScreen(
                         onClick = {
                             val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(tag)
                             AppCompatDelegate.setApplicationLocales(appLocale)
-                            expanded = false
+                            langExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // --- Theme Selection ---
+        Text(
+            text = stringResource(R.string.label_theme),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        val themes = listOf(
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM to stringResource(R.string.theme_system),
+            AppCompatDelegate.MODE_NIGHT_NO to stringResource(R.string.theme_light),
+            AppCompatDelegate.MODE_NIGHT_YES to stringResource(R.string.theme_dark)
+        )
+
+        val currentNightMode = AppCompatDelegate.getDefaultNightMode()
+        val currentThemeName = themes.find { it.first == currentNightMode }?.second 
+            ?: stringResource(R.string.theme_system)
+
+        var themeExpanded by remember { mutableStateOf(false) }
+
+        ExposedDropdownMenuBox(
+            expanded = themeExpanded,
+            onExpandedChange = { themeExpanded = it },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = currentThemeName,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(stringResource(R.string.label_theme)) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = themeExpanded) },
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = themeExpanded,
+                onDismissRequest = { themeExpanded = false }
+            ) {
+                themes.forEach { (mode, name) ->
+                    DropdownMenuItem(
+                        text = { Text(name) },
+                        onClick = {
+                            AppCompatDelegate.setDefaultNightMode(mode)
+                            themeExpanded = false
                         }
                     )
                 }

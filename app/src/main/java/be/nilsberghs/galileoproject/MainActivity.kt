@@ -125,18 +125,27 @@ class MainActivity : AppCompatActivity() {
                                     if (currentGameId == null) {
                                         if (currentScreen == Screen.NewGame) {
                                             IconButton(onClick = { showAddDialog = true }) {
-                                                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.dialog_add_player_title))
+                                                Icon(
+                                                    Icons.Default.Add,
+                                                    contentDescription = stringResource(R.string.dialog_add_player_title)
+                                                )
                                             }
                                         } else if (currentScreen == Screen.History && selectedHistoryGameId != null) {
                                             IconButton(onClick = { showDeleteConfirm = true }) {
-                                                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.action_delete))
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = stringResource(R.string.action_delete)
+                                                )
                                             }
                                         }
-                                        
-                                        IconButton(onClick = { currentScreen = Screen.Settings }) {
-                                            Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.desc_settings))
-                                        }
                                     }
+                                    IconButton(onClick = { currentScreen = Screen.Settings }) {
+                                        Icon(
+                                            Icons.Default.Settings,
+                                            contentDescription = stringResource(R.string.desc_settings)
+                                        )
+                                    }
+
                                 }
                             )
                         },

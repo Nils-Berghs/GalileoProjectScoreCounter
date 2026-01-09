@@ -57,4 +57,8 @@
     <string name="label_language">App Language</string>
     <string name="lang_en">English</string>
     <string name="lang_nl">Nederlands</string>
+    <string name="label_theme">App Theme</string>
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
 </resources>

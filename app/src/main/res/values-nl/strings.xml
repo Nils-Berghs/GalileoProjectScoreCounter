@@ -40,4 +40,8 @@
     <string name="label_language">Taal</string>
     <string name="lang_en">English</string>
     <string name="lang_nl">Nederlands</string>
+    <string name="label_theme">Thema</string>
+    <string name="theme_system">Systeemstandaard</string>
+    <string name="theme_light">Licht</string>
+    <string name="theme_dark">Donker</string>
 </resources>
