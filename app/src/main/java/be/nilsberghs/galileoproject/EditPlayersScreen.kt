@@ -67,8 +67,7 @@ fun EditPlayersScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-
-            LazyColumn(modifier = Modifier.weight(1f)) {
+            LazyColumn(modifier = Modifier.weight(1f))  {
                 items(allPlayers) { player ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

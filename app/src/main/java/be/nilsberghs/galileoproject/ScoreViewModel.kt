@@ -1,6 +1,7 @@
 package be.nilsberghs.galileoproject
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import be.nilsberghs.galileoproject.data.AppDatabase
@@ -19,9 +20,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ScoreViewModel(application: Application) : AndroidViewModel(application) {
+    private val LOGTAG = "ScoreViewModel"
     private val playerDao = AppDatabase.getDatabase(application).playerDao()
     private val gameDao = AppDatabase.getDatabase(application).gameDao()
 
@@ -40,6 +43,13 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
+        )
+
+    val nullableAllPlayers: StateFlow<List<Player>?> = playerDao.getAllPlayers()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null // Start with null to indicate "Loading"
         )
 
     val activePlayers: StateFlow<List<Player>> = playerDao.getActivePlayers()
@@ -69,12 +79,36 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     val fullHistory: StateFlow<List<GameHistory>> = gameDao.getFullHistory()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    /**
-     * Persists a new player to the database and automatically adds them
-     * to the current selection if the insertion was successful.
-     *
-     * @param name The display name of the player to be created.
-     */
+    init {
+        viewModelScope.launch {
+            try {
+                Log.d(LOGTAG, "Checking for unfinished games...")
+                val activeId = gameDao.getLatestActiveGameId()
+                if (activeId != null) {
+                    Log.d(LOGTAG, "Resuming unfinished game $activeId")
+                    // Use the new List-based query to avoid Flow hanging during init
+                    val entries = gameDao.getScoresForGameList(activeId) 
+                    val players = gameDao.getPlayersForGame(activeId)
+
+                    val orderedPlayers = entries.mapNotNull { entry ->
+                        players.find { it.id == entry.playerId }
+                    }
+                    
+                    if (orderedPlayers.isNotEmpty()) {
+                        _selectedPlayers.value = orderedPlayers
+                        Log.d(LOGTAG, "Setting current game Id to $activeId")
+                        _currentGameId.value = activeId
+                    } else {
+                        Log.d(LOGTAG, "Game had no players, deleting $activeId")
+                        gameDao.deleteGameById(activeId)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(LOGTAG, "Error in init", e)
+            }
+        }
+    }
+
     fun addPlayerToDatabase(name: String) {
         viewModelScope.launch {
             val id = playerDao.insert(Player(name = name))
@@ -90,7 +124,6 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
             val updatedPlayer = player.copy(name = newName)
             playerDao.update(updatedPlayer)
 
-            // Fix: If this player was selected, update their object in the selection list
             val currentSelection = _selectedPlayers.value.toMutableList()
             val index = currentSelection.indexOfFirst { it.id == player.id }
             if (index != -1) {
@@ -102,7 +135,6 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
     fun deletePlayer(player: Player) {
         viewModelScope.launch {
-            // Remove the player from the selection if they are currently selected
             _selectedPlayers.value = _selectedPlayers.value.filter { it.id != player.id }
             playerDao.softDeletePlayer(player.id)
         }
@@ -152,6 +184,9 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
     fun finishGame() {
         viewModelScope.launch {
+            _currentGameId.value?.let { id ->
+                gameDao.markGameFinished(id)
+            }
             _currentGameId.value = null
         }
     }

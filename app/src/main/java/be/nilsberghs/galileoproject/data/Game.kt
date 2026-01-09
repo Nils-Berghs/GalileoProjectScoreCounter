@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class Game(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val startTime: Long = System.currentTimeMillis()
+    val startTime: Long = System.currentTimeMillis(),
+    val isFinished: Boolean = false
 )

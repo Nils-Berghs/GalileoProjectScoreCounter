@@ -1,6 +1,7 @@
 package be.nilsberghs.galileoproject
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,10 +24,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -38,6 +41,7 @@ enum class Screen {
 }
 
 class MainActivity : ComponentActivity() {
+    private val LOG_TAG = "MainActivity"
     private val viewModel: ScoreViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -47,11 +51,33 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GalileoProjectTheme {
-                var currentScreen by remember { mutableStateOf(Screen.NewGame) }
+                var currentScreen by rememberSaveable { mutableStateOf(Screen.NewGame) }
                 var showAddDialog by remember { mutableStateOf(false) }
                 var showDeleteConfirm by remember { mutableStateOf(false) }
                 val currentGameId by viewModel.currentGameId.collectAsState()
                 val selectedHistoryGameId by viewModel.selectedHistoryGameId.collectAsState()
+                val nullableAllPlayers by viewModel.nullableAllPlayers.collectAsState()
+
+                // Redirect to EditPlayers ONLY if no players exist AND no game is being resumed
+                var hasRedirected by rememberSaveable { mutableStateOf(false) }
+
+                LaunchedEffect(nullableAllPlayers, currentGameId) {
+
+                    // Safety check: wait for players list if not yet loaded
+                    val players = nullableAllPlayers ?: return@LaunchedEffect
+
+                    if (!hasRedirected && currentGameId == null) {
+                        Log.d(LOG_TAG, "Checking for Redirect to EditPlayers")
+                        if (players.isEmpty()) {
+                            Log.d(LOG_TAG, "Redirecting to EditPlayers")
+                            currentScreen = Screen.EditPlayers
+                        }
+                        hasRedirected = true
+                    } else if (currentGameId != null) {
+                        Log.d(LOG_TAG, "Setting active screen to new game")
+                        currentScreen = Screen.NewGame
+                    }
+                }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -61,7 +87,7 @@ class MainActivity : ComponentActivity() {
                                 Text(
                                     when (currentScreen) {
                                         Screen.History -> if (selectedHistoryGameId != null) "Game Detail" else "Previous Games"
-                                        Screen.NewGame -> "Select Players (max 4)"
+                                        Screen.NewGame -> if (currentGameId != null) "Game Scoring" else "Select Players (max 4)"
                                         Screen.EditPlayers -> "Manage Players"
                                     }
                                 )
@@ -134,30 +160,35 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    if (currentGameId == null) {
-                        when (currentScreen) {
-                            Screen.History -> {
-                                HistoryScreen(
-                                    viewModel = viewModel,
-                                    modifier = Modifier.padding(innerPadding)
-                                )
-                            }
-                            Screen.NewGame -> PlayerSelectionScreen(
-                                viewModel = viewModel,
-                                onStartGame = { viewModel.startNewGame() },
-                                modifier = Modifier.padding(innerPadding)
-                            )
-                            Screen.EditPlayers -> EditPlayersScreen(
+                    when (currentScreen) {
+                        Screen.History -> {
+                            HistoryScreen(
                                 viewModel = viewModel,
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }
-                    } else {
-                        GameScoringScreen(
-                            viewModel = viewModel,
-                            onFinishGame = viewModel::finishGame,
-                            modifier = Modifier.padding(innerPadding)
-                        )
+                        Screen.EditPlayers -> {
+                            EditPlayersScreen(
+                                viewModel = viewModel,
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
+                        Screen.NewGame -> {
+                            // The "New Game" tab has two states: Setup or Active Scoring
+                            if (currentGameId == null) {
+                                PlayerSelectionScreen(
+                                    viewModel = viewModel,
+                                    onStartGame = { viewModel.startNewGame() },
+                                    modifier = Modifier.padding(innerPadding)
+                                )
+                            } else {
+                                GameScoringScreen(
+                                    viewModel = viewModel,
+                                    onFinishGame = viewModel::finishGame,
+                                    modifier = Modifier.padding(innerPadding)
+                                )
+                            }
+                        }
                     }
                 }
             }
