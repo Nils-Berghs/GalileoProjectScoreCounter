@@ -210,7 +210,14 @@ fun GameScoringContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(onClick = onFinishGame, modifier = Modifier.fillMaxWidth()) {
+        // Check if all players have a total > 0
+        val canFinish = isReadOnly || (scores.isNotEmpty() && scores.all { it.total > 0 })
+
+        Button(
+            onClick = onFinishGame,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = canFinish
+        ) {
             Text(if (isReadOnly) "Back" else "Finish Game")
         }
     }
