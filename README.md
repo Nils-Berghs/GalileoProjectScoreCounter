@@ -4,11 +4,11 @@ An Android application designed to replace paper score sheets for the board game
 
 ## Project Description
 This app provides a digital scoring solution for fans of the Galileo Project board game. It allows players to:
-* **Select Players**: Easily choose 2 to 4 players for a game session.
-* **Real-time Scoring**: Input scores across all game categories (Io, Europa, Ganymede, Callisto, Technologies, Assistants, and Goals). The app automatically calculates totals and enforces game-specific scoring limits.
-* **Auto-Resume**: Never lose your progress. If the app or phone restarts, you can resume your active game exactly where you left off.
+* **Select/Manage Players**: Easily choose 2 to 4 players for a game session.
+* **Scoring**: Input scores across all game categories (Io, Europa, Ganymede, Callisto, Technologies, Assistants, and Goals). The app automatically calculates totals and enforces game-specific scoring limits.
 * **Game History**: View a detailed log of previous games, including winners, dates, and full score breakdowns.
 * **Theme Support**: Full support for Light and Dark modes, plus a system default option.
+* **Ad free**: This app contains no advertisements 
 
 ## Localization
 The app currently supports:
