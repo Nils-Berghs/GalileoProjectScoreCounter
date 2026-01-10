@@ -25,6 +25,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,9 +39,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -226,17 +229,28 @@ fun ScoreInputCell(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
-    var textValue by remember(value) { mutableStateOf(if (value == 0) "" else value.toString()) }
+    var textFieldValue by remember { mutableStateOf(
+        TextFieldValue(
+            if (value == 0) "" else value.toString()
+        )
+    )}
+
+    LaunchedEffect(value) {
+        if ((textFieldValue.text.toIntOrNull() ?: 0) != value) {
+            val newText = if (value == 0) "" else value.toString()
+            textFieldValue = TextFieldValue(
+                text = newText,
+                selection = TextRange(newText.length) // Reset cursor to the end
+            )
+        }
+    }
 
     TextField(
-        value = textValue,
-        onValueChange = { it ->
-            if (it.isEmpty()) {
-                onValueChange(0)
-            } else {
-                it.toIntOrNull()?.let { newValue ->
-                    onValueChange(newValue) // The ViewModel will coerce this to 18
-                }
+        value = textFieldValue,
+        onValueChange = { newValue ->    // Only update if input is empty or a valid number
+            if (newValue.text.isEmpty() || newValue.text.toIntOrNull() != null) {
+                textFieldValue = newValue
+                onValueChange(newValue.text.toIntOrNull() ?: 0)
             }
         },
         enabled = enabled,
