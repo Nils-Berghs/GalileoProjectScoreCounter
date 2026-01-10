@@ -47,5 +47,6 @@
     <string name="theme_dark">Donker</string>
     <string name="action_about">Over deze App</string>
     <string name="about_disclaimer">Dit is een onofficiële applicatie, gemaakt door een speler. Ik ben op geen enkele wijze verbonden aan of gesponsord door de uitgever \'Sorry We Are French\' van het spel. Ik heb hun toelating om deze app voor niet commerciële doelen uit te geven.</string>
+    <string name="about_publisher">"Over Galileo Project "</string>
     <string name="about_github">Source code op GitHub</string>
 </resources>

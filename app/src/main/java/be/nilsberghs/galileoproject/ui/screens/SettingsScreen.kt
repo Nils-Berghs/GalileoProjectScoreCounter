@@ -1,5 +1,6 @@
 package be.nilsberghs.galileoproject.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,11 +33,16 @@ import be.nilsberghs.galileoproject.ScoreViewModel
 @Composable
 fun SettingsScreen(
     viewModel: ScoreViewModel,
+    onBackClick: () -> Unit,
     onAboutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
     val currentActiveLanguage = configuration.locales[0].language
+
+    BackHandler {
+        onBackClick()
+    }
 
     Column(
         modifier = modifier
