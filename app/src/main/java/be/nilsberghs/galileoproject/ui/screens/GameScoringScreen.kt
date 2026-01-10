@@ -157,10 +157,8 @@ fun GameScoringContent(
                     contentDescription = cat.name,
                     tint = cat.color ?: Color.Unspecified,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(60.dp)
                         .weight(0.6f)
-                        //.fillMaxHeight(32.dp)
-
                 )
 
                 players.forEach { player ->
