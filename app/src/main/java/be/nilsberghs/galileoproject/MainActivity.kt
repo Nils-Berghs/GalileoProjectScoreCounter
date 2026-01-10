@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import be.nilsberghs.galileoproject.ui.components.AddPlayerDialog
+import be.nilsberghs.galileoproject.ui.screens.AboutScreen
 import be.nilsberghs.galileoproject.ui.screens.EditPlayersScreen
 import be.nilsberghs.galileoproject.ui.screens.GameScoringScreen
 import be.nilsberghs.galileoproject.ui.screens.HistoryScreen
@@ -53,7 +54,7 @@ import be.nilsberghs.galileoproject.ui.screens.SettingsScreen
 import be.nilsberghs.galileoproject.ui.theme.GalileoProjectTheme
 
 enum class Screen {
-    History, NewGame, EditPlayers, Settings
+    History, NewGame, EditPlayers, Settings, About
 }
 
 class MainActivity : AppCompatActivity() {
@@ -114,6 +115,7 @@ class MainActivity : AppCompatActivity() {
                                             Screen.NewGame -> if (currentGameId != null) stringResource(R.string.title_game_scoring) else stringResource(R.string.title_select_players)
                                             Screen.EditPlayers -> stringResource(R.string.title_manage_players)
                                             Screen.Settings -> stringResource(R.string.title_settings)
+                                            Screen.About -> stringResource(R.string.title_about)
                                         }
                                     )
                                 },
@@ -209,7 +211,12 @@ class MainActivity : AppCompatActivity() {
                             when (currentScreen) {
                                 Screen.History -> HistoryScreen(viewModel, modifier = Modifier)
                                 Screen.EditPlayers -> EditPlayersScreen(viewModel, modifier = Modifier)
-                                Screen.Settings -> SettingsScreen(viewModel, modifier = Modifier, )
+                                Screen.Settings -> SettingsScreen(
+                                    viewModel = viewModel, 
+                                    onAboutClick = { currentScreen = Screen.About },
+                                    modifier = Modifier
+                                )
+                                Screen.About -> AboutScreen(modifier = Modifier)
                                 Screen.NewGame -> {
                                     if (currentGameId == null) {
                                         PlayerSelectionScreen(

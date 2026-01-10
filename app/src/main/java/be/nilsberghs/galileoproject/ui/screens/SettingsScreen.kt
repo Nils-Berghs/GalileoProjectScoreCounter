@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -31,6 +32,7 @@ import be.nilsberghs.galileoproject.ScoreViewModel
 @Composable
 fun SettingsScreen(
     viewModel: ScoreViewModel,
+    onAboutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
@@ -144,6 +146,15 @@ fun SettingsScreen(
                     )
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.weight(1f)) // Push About button to bottom
+
+        Button(
+            onClick = onAboutClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(R.string.action_about))
         }
     }
 }

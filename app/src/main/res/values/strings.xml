@@ -13,6 +13,7 @@
     <string name="title_game_scoring">Game Scoring</string>
     <string name="title_manage_players">Manage Players</string>
     <string name="title_settings">Settings</string>
+    <string name="title_about">About</string>
 
     <!-- Dialogs -->
     <string name="dialog_add_player_title">Add New Player</string>
@@ -58,7 +59,15 @@
     <string name="lang_en">English</string>
     <string name="lang_nl">Nederlands</string>
     <string name="label_theme">App Theme</string>
-    <string name="theme_system">System Default</string>
+    <string name="theme_system">Systeemstandaard</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="action_about">About this App</string>
+
+    <!-- About -->
+    <string name="about_disclaimer">This is an unofficial fan-made application. I am not affiliated with, endorsed by, or sponsored by the game\'s publisher, Sorry We Are French. However, I have obtained their permission to distribute this app non-commercially. All game-related imagery and trademarks are the property of their respective owners.</string>
+    <string name="about_publisher">Visit Sorry We Are French</string>
+    <string name="about_github">View Source on GitHub</string>
+    <string name="publisher_url" translatable="false">https://sorryweare.fr/en/game/galileo-project-en/</string>
+    <string name="github_url" translatable="false">https://github.com/nils-berghs/GalileoProjectScoreCounter</string>
 </resources>
