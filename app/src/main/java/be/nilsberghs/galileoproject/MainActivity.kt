@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             GalileoProjectTheme {
                 var currentScreen by rememberSaveable { mutableStateOf(Screen.NewGame) }
+                var previousScreen by rememberSaveable { mutableStateOf(Screen.NewGame) }
                 var showAddDialog by remember { mutableStateOf(false) }
                 var showDeleteConfirm by remember { mutableStateOf(false) }
                 val currentGameId by viewModel.currentGameId.collectAsState()
@@ -141,7 +142,10 @@ class MainActivity : AppCompatActivity() {
                                             }
                                         }
                                     }
-                                    IconButton(onClick = { currentScreen = Screen.Settings }) {
+                                    IconButton(onClick = {
+                                        previousScreen = currentScreen
+                                        currentScreen = Screen.Settings
+                                    }) {
                                         Icon(
                                             Icons.Default.Settings,
                                             contentDescription = stringResource(R.string.desc_settings)
@@ -212,11 +216,14 @@ class MainActivity : AppCompatActivity() {
                                 Screen.History -> HistoryScreen(viewModel, modifier = Modifier)
                                 Screen.EditPlayers -> EditPlayersScreen(viewModel, modifier = Modifier)
                                 Screen.Settings -> SettingsScreen(
-                                    viewModel = viewModel, 
+                                    viewModel = viewModel,
+                                    onBackClick = { currentScreen = previousScreen },
                                     onAboutClick = { currentScreen = Screen.About },
                                     modifier = Modifier
                                 )
-                                Screen.About -> AboutScreen(modifier = Modifier)
+                                Screen.About -> AboutScreen(
+                                    onBackClick = { currentScreen = Screen.Settings },
+                                    modifier = Modifier)
                                 Screen.NewGame -> {
                                     if (currentGameId == null) {
                                         PlayerSelectionScreen(

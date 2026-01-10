@@ -2,6 +2,7 @@ package be.nilsberghs.galileoproject.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,11 +23,16 @@ import be.nilsberghs.galileoproject.R
 
 @Composable
 fun AboutScreen(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val githubUrl = stringResource(R.string.github_url)
     val publisherUrl = stringResource(R.string.publisher_url)
+
+    BackHandler() {
+        onBackClick()
+    }
 
     Column(
         modifier = modifier
