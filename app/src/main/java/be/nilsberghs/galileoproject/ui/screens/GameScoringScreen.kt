@@ -55,6 +55,7 @@ import be.nilsberghs.galileoproject.ui.theme.CallistoBrown
 import be.nilsberghs.galileoproject.ui.theme.EuropaYellow
 import be.nilsberghs.galileoproject.ui.theme.GanymedeGrey
 import be.nilsberghs.galileoproject.ui.theme.IoOrange
+import kotlinx.coroutines.delay
 
 @Composable
 fun GameScoringScreen(
@@ -235,7 +236,8 @@ fun ScoreInputCell(
         )
     )}
 
-    LaunchedEffect(value) {
+    LaunchedEffect(value, textFieldValue) {
+        delay(500L)
         if ((textFieldValue.text.toIntOrNull() ?: 0) != value) {
             val newText = if (value == 0) "" else value.toString()
             textFieldValue = TextFieldValue(
