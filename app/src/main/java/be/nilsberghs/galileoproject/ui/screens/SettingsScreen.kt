@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,15 +41,19 @@ fun SettingsScreen(
 ) {
     val configuration = LocalConfiguration.current
     val currentActiveLanguage = configuration.locales[0].language
-
+    val scrollState = rememberScrollState()
     BackHandler {
         onBackClick()
     }
+
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val scrollModifier = if (isLandscape) Modifier.verticalScroll(scrollState) else Modifier
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
+            .then(scrollModifier)
     ) {
         // --- Language Selection ---
         Text(
@@ -154,7 +160,11 @@ fun SettingsScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f)) // Push About button to bottom
+        if (isLandscape) {
+            Spacer(modifier = Modifier.height(24.dp))
+        } else {
+            Spacer(modifier = Modifier.weight(1f)) // Push About button to bottom
+        }
 
         Button(
             onClick = onAboutClick,
