@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.DragHandle
@@ -37,6 +39,7 @@ import androidx.compose.ui.geometry.isEmpty
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -126,99 +129,197 @@ fun GameScoringContent(
         CategoryInfo("achievements", R.drawable.ic_achievement, stringResource(R.string.cat_achievements), MaterialTheme.colorScheme.onBackground),
     )
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Spacer(Modifier.weight(0.7f))
-            players.forEach { player ->
-                Text(
-                    text = player.name,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.labelSmall,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1
-                )
-            }
-        }
+    val configuration = LocalConfiguration.current
+    val scrollState = rememberScrollState()
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val scrollModifier = if (isLandscape) Modifier.verticalScroll(scrollState) else Modifier
+    val canFinish = isReadOnly || (scores.isNotEmpty() && scores.all { it.total > 0 })
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), thickness = 1.dp)
+    if (isLandscape) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(8.dp)
+                .then(scrollModifier)
+        ) {
+            // top row with Icons
+            Row(verticalAlignment = Alignment.CenterVertically) {
 
-        categories.forEach { cat ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .padding(vertical = 2.dp)
-            ) {
-                val iconPainter = painterResource(id = cat.resId)
+                Spacer(Modifier.weight(0.7f))
+
+                categories.forEach { cat ->
+
+                    val iconPainter = painterResource(id = cat.resId)
+
+                    Icon(
+                        painter = iconPainter,
+                        contentDescription = cat.name,
+                        tint = cat.color ?: Color.Unspecified,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .weight(0.6f)
+                    )
+                }
 
                 Icon(
-                    painter = iconPainter,
-                    contentDescription = cat.name,
-                    tint = cat.color ?: Color.Unspecified,
+                    imageVector = Icons.Default.DragHandle,
+                    contentDescription = stringResource(R.string.nav_history),
                     modifier = Modifier
-                        .size(60.dp)
-                        .weight(0.6f)
+                        .weight(0.7f)
+                        .size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
-                players.forEach { player ->
-                    val scoreEntry = scores.find { it.playerId == player.id }
+            }
 
-                    if (scoreEntry != null) {
-                        ScoreInputCell(
-                            value = getVal(scoreEntry, cat.id),
-                            onValueChange = { newValue ->
-                                onScoreChange(scoreEntry, cat.id, newValue)
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            enabled = !isReadOnly
-                        )
-                    } else {
-                        Spacer(Modifier.weight(1f))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            //row per player
+            players.forEach { player ->
+                val scoreEntry = scores.find { it.playerId == player.id }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = player.name,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1
+                    )
+
+                    categories.forEach { cat ->
+                        if (scoreEntry != null) {
+                            ScoreInputCell(
+                                value = getVal(scoreEntry, cat.id),
+                                onValueChange = { newValue ->
+                                    onScoreChange(scoreEntry, cat.id, newValue)
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(56.dp),
+                                enabled = !isReadOnly
+                            )
+                        } else {
+                            Spacer(Modifier.weight(1f))
+                        }
+                    }
+
+                    Text(
+                        text = scoreEntry?.total?.toString() ?: "0",
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Button(
+                onClick = onFinishGame,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = canFinish
+            ) {
+                Text(if (isReadOnly) stringResource(R.string.action_back) else stringResource(R.string.action_finish_game))
+            }
+        }
+    } else {
+        //portrait layout
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(Modifier.weight(0.7f))
+                players.forEach { player ->
+                    Text(
+                        text = player.name,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), thickness = 1.dp)
+
+            categories.forEach { cat ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .padding(vertical = 2.dp)
+                ) {
+                    val iconPainter = painterResource(id = cat.resId)
+
+                    Icon(
+                        painter = iconPainter,
+                        contentDescription = cat.name,
+                        tint = cat.color ?: Color.Unspecified,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .weight(0.6f)
+                    )
+
+                    players.forEach { player ->
+                        val scoreEntry = scores.find { it.playerId == player.id }
+
+                        if (scoreEntry != null) {
+                            ScoreInputCell(
+                                value = getVal(scoreEntry, cat.id),
+                                onValueChange = { newValue ->
+                                    onScoreChange(scoreEntry, cat.id, newValue)
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight(),
+                                enabled = !isReadOnly
+                            )
+                        } else {
+                            Spacer(Modifier.weight(1f))
+                        }
                     }
                 }
             }
-        }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.DragHandle,
-                contentDescription = stringResource(R.string.nav_history),
-                modifier = Modifier
-                    .weight(0.7f)
-                    .size(24.dp),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-            players.forEach { player ->
-                val scoreEntry = scores.find { it.playerId == player.id }
-                Text(
-                    text = scoreEntry?.total?.toString() ?: "0",
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.headlineSmall
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.DragHandle,
+                    contentDescription = stringResource(R.string.nav_history),
+                    modifier = Modifier
+                        .weight(0.7f)
+                        .size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
+                players.forEach { player ->
+                    val scoreEntry = scores.find { it.playerId == player.id }
+                    Text(
+                        text = scoreEntry?.total?.toString() ?: "0",
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        val canFinish = isReadOnly || (scores.isNotEmpty() && scores.all { it.total > 0 })
 
-        Button(
-            onClick = onFinishGame,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = canFinish
-        ) {
-            Text(if (isReadOnly) stringResource(R.string.action_back) else stringResource(R.string.action_finish_game))
+
+            Button(
+                onClick = onFinishGame,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = canFinish
+            ) {
+                Text(if (isReadOnly) stringResource(R.string.action_back) else stringResource(R.string.action_finish_game))
+            }
         }
     }
 }
