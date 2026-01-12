@@ -142,14 +142,16 @@ class MainActivity : AppCompatActivity() {
                                             }
                                         }
                                     }
-                                    IconButton(onClick = {
-                                        previousScreen = currentScreen
-                                        currentScreen = Screen.Settings
-                                    }) {
-                                        Icon(
-                                            Icons.Default.Settings,
-                                            contentDescription = stringResource(R.string.desc_settings)
-                                        )
+                                    if (currentScreen != Screen.Settings) {
+                                        IconButton(onClick = {
+                                            previousScreen = currentScreen
+                                            currentScreen = Screen.Settings
+                                        }) {
+                                            Icon(
+                                                Icons.Default.Settings,
+                                                contentDescription = stringResource(R.string.desc_settings)
+                                            )
+                                        }
                                     }
 
                                 }
