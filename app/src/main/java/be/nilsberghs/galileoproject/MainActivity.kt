@@ -79,13 +79,15 @@ class MainActivity : AppCompatActivity() {
 
                 LaunchedEffect(nullableAllPlayers, currentGameId) {
                     val players = nullableAllPlayers ?: return@LaunchedEffect
-                    if (!hasRedirected && currentGameId == null) {
-                        if (players.isEmpty()) {
-                            currentScreen = Screen.EditPlayers
+                    if (!hasRedirected) {
+                        if (currentGameId == null) {
+                            if (players.isEmpty()) {
+                                currentScreen = Screen.EditPlayers
+                            }
+                        } else {
+                            currentScreen = Screen.NewGame
                         }
                         hasRedirected = true
-                    } else if (currentGameId != null) {
-                        currentScreen = Screen.NewGame
                     }
                 }
 
@@ -142,14 +144,16 @@ class MainActivity : AppCompatActivity() {
                                             }
                                         }
                                     }
-                                    IconButton(onClick = {
-                                        previousScreen = currentScreen
-                                        currentScreen = Screen.Settings
-                                    }) {
-                                        Icon(
-                                            Icons.Default.Settings,
-                                            contentDescription = stringResource(R.string.desc_settings)
-                                        )
+                                    if (currentScreen != Screen.Settings) {
+                                        IconButton(onClick = {
+                                            previousScreen = currentScreen
+                                            currentScreen = Screen.Settings
+                                        }) {
+                                            Icon(
+                                                Icons.Default.Settings,
+                                                contentDescription = stringResource(R.string.desc_settings)
+                                            )
+                                        }
                                     }
 
                                 }
