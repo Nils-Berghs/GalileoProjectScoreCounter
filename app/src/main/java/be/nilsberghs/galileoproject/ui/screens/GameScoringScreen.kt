@@ -291,7 +291,7 @@ fun GameScoringContent(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.DragHandle,
-                    contentDescription = stringResource(R.string.nav_history),
+                    contentDescription = stringResource(R.string.total_score),
                     modifier = Modifier
                         .weight(0.7f)
                         .size(24.dp),

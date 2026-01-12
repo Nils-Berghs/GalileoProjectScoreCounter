@@ -79,13 +79,15 @@ class MainActivity : AppCompatActivity() {
 
                 LaunchedEffect(nullableAllPlayers, currentGameId) {
                     val players = nullableAllPlayers ?: return@LaunchedEffect
-                    if (!hasRedirected && currentGameId == null) {
-                        if (players.isEmpty()) {
-                            currentScreen = Screen.EditPlayers
+                    if (!hasRedirected) {
+                        if (currentGameId == null) {
+                            if (players.isEmpty()) {
+                                currentScreen = Screen.EditPlayers
+                            }
+                        } else {
+                            currentScreen = Screen.NewGame
                         }
                         hasRedirected = true
-                    } else if (currentGameId != null) {
-                        currentScreen = Screen.NewGame
                     }
                 }
 
