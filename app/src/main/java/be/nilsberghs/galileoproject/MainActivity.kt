@@ -1,6 +1,7 @@
 package be.nilsberghs.galileoproject
 
 import android.os.Bundle
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
@@ -78,6 +80,8 @@ class MainActivity : AppCompatActivity() {
 
                 var hasRedirected by rememberSaveable { mutableStateOf(false) }
 
+                val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
                 LaunchedEffect(nullableAllPlayers, currentGameId) {
                     val players = nullableAllPlayers ?: return@LaunchedEffect
                     if (!hasRedirected) {
@@ -112,6 +116,21 @@ class MainActivity : AppCompatActivity() {
                         contentColor = MaterialTheme.colorScheme.onBackground,
                         topBar = {
                             TopAppBar(
+                                navigationIcon = {
+                                    val showBack = currentScreen == Screen.Settings ||
+                                            currentScreen == Screen.About ||
+                                            (currentScreen == Screen.History && selectedHistoryGameId != null) ||
+                                            (currentScreen == Screen.NewGame && currentGameId != null)
+
+                                    if (showBack) {
+                                        IconButton(onClick = { backDispatcher?.onBackPressed() }) {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                                contentDescription = stringResource(R.string.action_back)
+                                            )
+                                        }
+                                    }
+                                },
                                 title = {
                                     Text(
                                         when (currentScreen) {
