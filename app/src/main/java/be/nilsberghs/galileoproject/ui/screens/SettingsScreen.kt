@@ -2,13 +2,17 @@ package be.nilsberghs.galileoproject.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -17,19 +21,26 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
 import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +81,7 @@ fun SettingsScreen(
         val currentLanguageName = languages.find { it.first == currentActiveLanguage }?.second 
             ?: languages.first().second
 
+        val coroutineScope = rememberCoroutineScope ()
         var langExpanded by remember { mutableStateOf(false) }
 
         ExposedDropdownMenuBox(
@@ -97,9 +109,13 @@ fun SettingsScreen(
                     DropdownMenuItem(
                         text = { Text(name) },
                         onClick = {
-                            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(tag)
-                            AppCompatDelegate.setApplicationLocales(appLocale)
                             langExpanded = false
+                            coroutineScope.launch {
+                                delay(500L)
+                                val appLocale: LocaleListCompat =
+                                    LocaleListCompat.forLanguageTags(tag)
+                                AppCompatDelegate.setApplicationLocales(appLocale)
+                            }
                         }
                     )
                 }
@@ -152,13 +168,51 @@ fun SettingsScreen(
                     DropdownMenuItem(
                         text = { Text(name) },
                         onClick = {
-                            viewModel.setThemeMode(mode)
+                            //close dropdown
                             themeExpanded = false
+                            coroutineScope.launch {
+                                delay(500L) // give ui time to close the dropdown 150 was not enough
+                                viewModel.setThemeMode(mode)
+                            }
+
                         }
                     )
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        val backgroundOpacity by viewModel.backgroundOpacity.collectAsState()
+
+        // Add Label
+        Text(
+            text = stringResource(R.string.label_background_opacity),
+            style = MaterialTheme.typography.titleMedium,    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+        )
+
+        Slider(
+            value = backgroundOpacity,
+            onValueChange = { viewModel.setBackgroundOpacity(it) },
+            steps = 9,
+            valueRange = 0f..1f,
+            modifier = Modifier.fillMaxWidth(),
+            colors = SliderDefaults.colors(
+                activeTickColor = Color.Transparent,
+                inactiveTickColor = Color.Transparent
+            ),
+            thumb = {
+                Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    )
+            )
+            }
+        )
+
 
         if (isLandscape) {
             Spacer(modifier = Modifier.height(24.dp))

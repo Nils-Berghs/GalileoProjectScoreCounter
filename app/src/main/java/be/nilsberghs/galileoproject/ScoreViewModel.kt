@@ -2,6 +2,7 @@ package be.nilsberghs.galileoproject
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.AndroidViewModel
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     private val LOGTAG = "ScoreViewModel"
@@ -33,6 +35,10 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _isInitializing = MutableStateFlow(true)
     val isInitializing = _isInitializing.asStateFlow()
+
+    // Initialize with saved value or default
+    private val _backgroundOpacity = MutableStateFlow(prefs.getFloat("background_opacity", 0.22f))
+    val backgroundOpacity = _backgroundOpacity.asStateFlow()
 
     private val _selectedPlayers = MutableStateFlow<List<Player>>(emptyList())
     val selectedPlayers: StateFlow<List<Player>> = _selectedPlayers.asStateFlow()
@@ -54,7 +60,7 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
             initialValue = emptyList()
         )
 
-    val nullableAllPlayers: StateFlow<List<Player>?> = playerDao.getAllPlayers()
+    val nullableAllPlayers: StateFlow<List<Player>?> = playerDao.getActivePlayers()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -237,4 +243,11 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     fun hasAnyScores(): Boolean {
         return currentScores.value.any { it.total > 0 }
     }
+
+    // Function to update and persist the value
+    fun setBackgroundOpacity(opacity: Float) {
+        _backgroundOpacity.value = opacity
+        prefs.edit { putFloat("background_opacity", opacity) }
+    }
+
 }
