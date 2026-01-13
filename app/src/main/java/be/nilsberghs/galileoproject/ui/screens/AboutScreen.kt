@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import be.nilsberghs.galileoproject.R
+import be.nilsberghs.galileoproject.BuildConfig
 
 @Composable
 fun AboutScreen(
@@ -53,6 +54,20 @@ fun AboutScreen(
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Justify
         )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        val displayVersion = if (BuildConfig.DEBUG) {
+            BuildConfig.VERSION_NAME + "." + BuildConfig.BUILD_NUMBER // Show full "1.0.0 (42)"
+        } else {
+            // Strips the space and everything in parentheses: "1.0.0 (42)" -> "1.0.0"
+            BuildConfig.VERSION_NAME
+        }
+
+        Text(
+            text = "Version: $displayVersion",
+        )
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
