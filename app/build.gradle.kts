@@ -1,3 +1,7 @@
+import java.util.Properties
+import java.util.Date
+import java.text.SimpleDateFormat
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,16 +9,32 @@ plugins {
     alias(libs.plugins.google.ksp)
 }
 
+val versionMajor = project.property("VERSION_MAJOR").toString().toInt()
+val versionMinor = project.property("VERSION_MINOR").toString().toInt()
+val versionPatch = project.property("VERSION_PATCH").toString().toInt()
+
+
 android {
     namespace = "be.nilsberghs.galileoproject"
     compileSdk = 36
+
+    val autoBuildNumber = SimpleDateFormat("yyMMdd HH:mm:ss").format(Date())
+
 
     defaultConfig {
         applicationId = "be.nilsberghs.galileoproject"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        // versionCode must be an Integer.
+        // We use a formula so it always increases when any part of the version changes.
+        versionCode = (versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100)
+
+        // versionName will look like "1.0.0 (42)"
+        versionName = "$versionMajor.$versionMinor.$versionPatch"
+
+        // This makes the version and build number accessible in your Kotlin code
+        buildConfigField("String", "VERSION_NAME", "\"$versionName\"")
+        buildConfigField("String", "BUILD_NUMBER", "\"$autoBuildNumber\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,8 +57,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
