@@ -54,7 +54,7 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
             initialValue = emptyList()
         )
 
-    val nullableAllPlayers: StateFlow<List<Player>?> = playerDao.getAllPlayers()
+    val nullableAllPlayers: StateFlow<List<Player>?> = playerDao.getActivePlayers()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
