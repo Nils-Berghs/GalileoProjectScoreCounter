@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -176,10 +177,17 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val backgroundOpacity by viewModel.backgroundOpacity.collectAsState()
+
+        // Add Label
+        Text(
+            text = stringResource(R.string.label_background_opacity),
+            style = MaterialTheme.typography.titleMedium,    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+        )
+
         Slider(
-            value = 0.5f,
-            onValueChange = { /* Handle slider value change */ },
-            valueRange = 0f..1f,
+            value = backgroundOpacity,
+            onValueChange = { viewModel.setBackgroundOpacity(it) },
 
             modifier = Modifier.fillMaxWidth()
         )

@@ -62,6 +62,7 @@
     <string name="theme_system">System Default</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="label_background_opacity">Background Opacity</string>
     <string name="action_about">About this App</string>
 
     <!-- About -->

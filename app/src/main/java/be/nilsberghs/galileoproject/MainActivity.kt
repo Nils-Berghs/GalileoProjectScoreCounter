@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                 val currentGameId by viewModel.currentGameId.collectAsState()
                 val selectedHistoryGameId by viewModel.selectedHistoryGameId.collectAsState()
                 val nullableAllPlayers by viewModel.nullableAllPlayers.collectAsState()
+                val backgroundOpacity by viewModel.backgroundOpacity.collectAsState()
 
                 var hasRedirected by rememberSaveable { mutableStateOf(false) }
 
@@ -101,7 +102,7 @@ class MainActivity : AppCompatActivity() {
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()
-                            .alpha(0.22f),
+                            .alpha(backgroundOpacity), // Link to ViewModel state
                         contentScale = ContentScale.Crop
                     )
 
