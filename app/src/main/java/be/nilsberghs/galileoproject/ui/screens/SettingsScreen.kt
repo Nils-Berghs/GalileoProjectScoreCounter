@@ -17,11 +17,13 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -30,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
 import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +74,7 @@ fun SettingsScreen(
         val currentLanguageName = languages.find { it.first == currentActiveLanguage }?.second 
             ?: languages.first().second
 
+        val coroutineScope = rememberCoroutineScope ()
         var langExpanded by remember { mutableStateOf(false) }
 
         ExposedDropdownMenuBox(
@@ -97,9 +102,13 @@ fun SettingsScreen(
                     DropdownMenuItem(
                         text = { Text(name) },
                         onClick = {
-                            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(tag)
-                            AppCompatDelegate.setApplicationLocales(appLocale)
                             langExpanded = false
+                            coroutineScope.launch {
+                                delay(150L)
+                                val appLocale: LocaleListCompat =
+                                    LocaleListCompat.forLanguageTags(tag)
+                                AppCompatDelegate.setApplicationLocales(appLocale)
+                            }
                         }
                     )
                 }
@@ -152,13 +161,29 @@ fun SettingsScreen(
                     DropdownMenuItem(
                         text = { Text(name) },
                         onClick = {
-                            viewModel.setThemeMode(mode)
+                            //close dropdown
                             themeExpanded = false
+                            coroutineScope.launch {
+                                delay(150L) // give ui time to close the dropdown
+                                viewModel.setThemeMode(mode)
+                            }
+
                         }
                     )
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Slider(
+            value = 0.5f,
+            onValueChange = { /* Handle slider value change */ },
+            valueRange = 0f..1f,
+
+            modifier = Modifier.fillMaxWidth()
+        )
+
 
         if (isLandscape) {
             Spacer(modifier = Modifier.height(24.dp))
