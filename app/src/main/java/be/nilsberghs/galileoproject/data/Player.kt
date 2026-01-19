@@ -1,5 +1,6 @@
 package be.nilsberghs.galileoproject.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -7,6 +8,8 @@ import androidx.room.PrimaryKey
 data class Player(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+
+    @ColumnInfo(collate = ColumnInfo.NOCASE)
     val name: String,
     val isDeleted: Boolean = false,
 ) {

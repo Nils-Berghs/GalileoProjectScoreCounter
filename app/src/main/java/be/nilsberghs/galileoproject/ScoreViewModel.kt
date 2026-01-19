@@ -26,6 +26,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
+import be.nilsberghs.galileoproject.util.AddPlayerResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     private val LOGTAG = "ScoreViewModel"
@@ -136,14 +139,24 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
-    fun addPlayerToDatabase(name: String) {
-        viewModelScope.launch {
-            val player = playerDao.getPlayerByName(name)
-            val id = playerDao.insert(Player(name = name))
-            if (id != -1L){
-                val newPlayer = Player(id = id.toInt(), name = name)
-                togglePlayerSelection(newPlayer)
+    suspend fun addPlayerToDatabase(name: String): AddPlayerResult = withContext(Dispatchers.IO) {
+        val trimmedName = name.trim()
+        if (trimmedName.isEmpty()) return@withContext AddPlayerResult.AlreadyExists
+
+        val existingPlayer = playerDao.getPlayerByName(trimmedName)
+
+        return@withContext when {
+            // Case A: Name is completely new
+            existingPlayer == null -> {
+                val id = playerDao.insert(Player(name = trimmedName))
+                val newPlayer = Player(id = id.toInt(), name = trimmedName)
+                withContext(Dispatchers.Main) { togglePlayerSelection(newPlayer) }
+                AddPlayerResult.Success
             }
+            // Case B: Player exists but is soft-deleted
+            existingPlayer.isDeleted -> AddPlayerResult.DeletedExists(existingPlayer)
+            // Case C: Player is already active
+            else -> AddPlayerResult.AlreadyExists
         }
     }
 
