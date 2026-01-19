@@ -138,6 +138,7 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addPlayerToDatabase(name: String) {
         viewModelScope.launch {
+            val player = playerDao.getPlayerByName(name)
             val id = playerDao.insert(Player(name = name))
             if (id != -1L){
                 val newPlayer = Player(id = id.toInt(), name = name)

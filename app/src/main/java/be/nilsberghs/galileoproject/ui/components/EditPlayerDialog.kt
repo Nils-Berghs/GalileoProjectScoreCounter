@@ -3,6 +3,10 @@ package be.nilsberghs.galileoproject.ui.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -26,11 +30,11 @@ fun EditPlayerDialog(
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    var name by remember { mutableStateOf(player.name) }
 
+    val state = rememberTextFieldState(player.name)
     val onAdd = {
-        if (name.isNotBlank()) {
-            onConfirm(name)
+        if (state.text.isNotBlank()) {
+            onConfirm(state.text.toString())
             onDismiss()
         }
     }
@@ -40,22 +44,22 @@ fun EditPlayerDialog(
         title = { Text(stringResource(R.string.dialog_edit_player_title)) },
         text = {
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
+                state = state,
+                inputTransformation = InputTransformation.maxLength(25),
                 label = { Text(stringResource(R.string.label_player_name)) },
-                singleLine = true,
+                lineLimits = TextFieldLineLimits.SingleLine,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     capitalization = KeyboardCapitalization.Words
                 ),
-                keyboardActions = KeyboardActions(onDone = { onAdd() })
+                onKeyboardAction = { onAdd() }
             )
         },
         confirmButton = {
             Button(
                 onClick = onAdd,
-                enabled = name.isNotBlank()
+                enabled = state.text.isNotBlank()
             ) { Text(stringResource(R.string.action_ok)) }
         },
         dismissButton = {
