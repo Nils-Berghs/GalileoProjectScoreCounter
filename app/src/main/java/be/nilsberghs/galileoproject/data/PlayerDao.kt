@@ -17,6 +17,10 @@ interface PlayerDao {
     @Query("SELECT * FROM players WHERE isDeleted = 0 ORDER BY name ASC")
     fun getActivePlayers(): Flow<List<Player>>
 
+    @Query(value = "SELECT * FROM players WHERE name = :name LIMIT 1")
+    suspend fun getPlayerByName(name: String) : Player?
+
+
     @Query("UPDATE players SET isDeleted = 1 WHERE id = :playerId")
     suspend fun softDeletePlayer(playerId: Int)
 

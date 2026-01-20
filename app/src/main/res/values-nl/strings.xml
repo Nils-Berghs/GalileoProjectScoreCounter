@@ -45,9 +45,12 @@
     <string name="theme_system">Systeemstandaard</string>
     <string name="theme_light">Licht</string>
     <string name="theme_dark">Donker</string>
+    <string name="label_background_opacity">Transparantie achtergrond</string>
     <string name="action_about">Over deze App</string>
     <string name="about_disclaimer">Dit is een onofficiële applicatie, gemaakt door een speler. Ik ben op geen enkele wijze verbonden aan of gesponsord door de uitgever \'Sorry We Are French\' van het spel. Ik heb hun toelating om deze app voor niet commerciële doelen uit te geven.</string>
     <string name="about_publisher">"Over Galileo Project "</string>
     <string name="about_github">Source code op GitHub</string>
     <string name="total_score">Score Totaal</string>
+    <string name="player_exists">Een speler met deze naam bestaat reeds</string>
+    <string name="deleted_player_exists">Een speler met deze naam bestaat, maar werd verwijderd. Heractiveer deze speler via \'verwijderde spelers</string>
 </resources>

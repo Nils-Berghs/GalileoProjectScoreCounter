@@ -72,4 +72,6 @@
     <string name="publisher_url" translatable="false">https://sorryweare.fr/en/game/galileo-project-en/</string>
     <string name="github_url" translatable="false">https://github.com/nils-berghs/GalileoProjectScoreCounter</string>
     <string name="total_score">Total Score</string>
+    <string name="player_exists">A player with that name already exists</string>
+    <string name="deleted_player_exists">A player with that nane exists, but is deleted, restore it from the deleted players</string>
 </resources>

@@ -26,6 +26,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
+import be.nilsberghs.galileoproject.util.AddPlayerResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ScoreViewModel(application: Application) : AndroidViewModel(application) {
     private val LOGTAG = "ScoreViewModel"
@@ -136,28 +139,44 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
-    fun addPlayerToDatabase(name: String) {
-        viewModelScope.launch {
-            val id = playerDao.insert(Player(name = name))
-            if (id != -1L){
-                val newPlayer = Player(id = id.toInt(), name = name)
-                togglePlayerSelection(newPlayer)
+    suspend fun addPlayerToDatabase(name: String): AddPlayerResult = withContext(Dispatchers.IO) {
+        val trimmedName = name.trim()
+        val existingPlayer = playerDao.getPlayerByName(trimmedName)
+
+        return@withContext when {
+            // Case A: Name is completely new
+            existingPlayer == null -> {
+                val id = playerDao.insert(Player(name = trimmedName))
+                val newPlayer = Player(id = id.toInt(), name = trimmedName)
+                withContext(Dispatchers.Main) { togglePlayerSelection(newPlayer) }
+                AddPlayerResult.Success
             }
+            // Case B: Player exists but is soft-deleted
+            existingPlayer.isDeleted -> AddPlayerResult.DeletedExists(existingPlayer)
+            // Case C: Player is already active
+            else -> AddPlayerResult.AlreadyExists
         }
     }
 
-    fun updatePlayerName(player: Player, newName: String) {
-        viewModelScope.launch {
-            val updatedPlayer = player.copy(name = newName)
-            playerDao.update(updatedPlayer)
+    suspend fun updatePlayerName(player: Player, newName: String): AddPlayerResult = withContext(Dispatchers.IO) {
+        var trimmedName = newName.trim()
+        val existingPlayer = playerDao.getPlayerByName(trimmedName)
 
-            val currentSelection = _selectedPlayers.value.toMutableList()
-            val index = currentSelection.indexOfFirst { it.id == player.id }
-            if (index != -1) {
-                currentSelection[index] = updatedPlayer
-                _selectedPlayers.value = currentSelection
+        return@withContext when {
+            existingPlayer == null -> {
+                //ok we can rename the player
+                val updatedPlayer = player.copy(name = newName)
+                playerDao.update(updatedPlayer)
+
+                withContext(Dispatchers.Main) { updateSelectedPlayer(player, updatedPlayer)}
+                AddPlayerResult.Success
             }
+            // Case B: Player exists but is soft-deleted
+            existingPlayer.isDeleted -> AddPlayerResult.DeletedExists(existingPlayer)
+            // Case C: Player is already active
+            else -> AddPlayerResult.AlreadyExists
         }
+
     }
 
     fun deletePlayer(player: Player) {
@@ -181,6 +200,15 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
             current.add(player)
         }
         _selectedPlayers.value = current
+    }
+
+    fun updateSelectedPlayer(player: Player, updatedPlayer: Player){
+        val currentSelection = _selectedPlayers.value.toMutableList()
+        val index = currentSelection.indexOfFirst { it.id == player.id }
+        if (index != -1) {
+            currentSelection[index] = updatedPlayer
+            _selectedPlayers.value = currentSelection
+        }
     }
 
     fun startNewGame() {
