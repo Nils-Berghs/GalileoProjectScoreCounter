@@ -43,7 +43,7 @@ fun AddPlayerDialog(
         if (state.text.isNotBlank()) {
 
             scope.launch {
-                when (val result = onConfirm(state.text.toString())) {
+                when (val result = onConfirm(state.text.toString().trim())) {
                     is AddPlayerResult.Success -> onDismiss()
                     is AddPlayerResult.AlreadyExists -> {
                         errorMessage = context.getString(R.string.player_exists)

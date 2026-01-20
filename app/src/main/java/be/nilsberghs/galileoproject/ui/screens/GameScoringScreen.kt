@@ -351,9 +351,11 @@ fun ScoreInputCell(
     TextField(
         value = textFieldValue,
         onValueChange = { newValue ->    // Only update if input is empty or a valid number
-            if (newValue.text.isEmpty() || newValue.text.toIntOrNull() != null) {
-                textFieldValue = newValue
-                onValueChange(newValue.text.toIntOrNull() ?: 0)
+            val text = newValue.text.trimStart('0')
+            if (text.isEmpty() || text.toIntOrNull() != null) {
+
+                textFieldValue = newValue.copy(text = text)
+                onValueChange(text.toIntOrNull() ?: 0)
             }
         },
         enabled = enabled,
