@@ -141,8 +141,6 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
 
     suspend fun addPlayerToDatabase(name: String): AddPlayerResult = withContext(Dispatchers.IO) {
         val trimmedName = name.trim()
-        if (trimmedName.isEmpty()) return@withContext AddPlayerResult.AlreadyExists
-
         val existingPlayer = playerDao.getPlayerByName(trimmedName)
 
         return@withContext when {
@@ -160,18 +158,25 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updatePlayerName(player: Player, newName: String) {
-        viewModelScope.launch {
-            val updatedPlayer = player.copy(name = newName)
-            playerDao.update(updatedPlayer)
+    suspend fun updatePlayerName(player: Player, newName: String): AddPlayerResult = withContext(Dispatchers.IO) {
+        var trimmedName = newName.trim()
+        val existingPlayer = playerDao.getPlayerByName(trimmedName)
 
-            val currentSelection = _selectedPlayers.value.toMutableList()
-            val index = currentSelection.indexOfFirst { it.id == player.id }
-            if (index != -1) {
-                currentSelection[index] = updatedPlayer
-                _selectedPlayers.value = currentSelection
+        return@withContext when {
+            existingPlayer == null -> {
+                //ok we can rename the player
+                val updatedPlayer = player.copy(name = newName)
+                playerDao.update(updatedPlayer)
+
+                withContext(Dispatchers.Main) { updateSelectedPlayer(player, updatedPlayer)}
+                AddPlayerResult.Success
             }
+            // Case B: Player exists but is soft-deleted
+            existingPlayer.isDeleted -> AddPlayerResult.DeletedExists(existingPlayer)
+            // Case C: Player is already active
+            else -> AddPlayerResult.AlreadyExists
         }
+
     }
 
     fun deletePlayer(player: Player) {
@@ -195,6 +200,15 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
             current.add(player)
         }
         _selectedPlayers.value = current
+    }
+
+    fun updateSelectedPlayer(player: Player, updatedPlayer: Player){
+        val currentSelection = _selectedPlayers.value.toMutableList()
+        val index = currentSelection.indexOfFirst { it.id == player.id }
+        if (index != -1) {
+            currentSelection[index] = updatedPlayer
+            _selectedPlayers.value = currentSelection
+        }
     }
 
     fun startNewGame() {

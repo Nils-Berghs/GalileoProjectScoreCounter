@@ -57,10 +57,7 @@ fun EditPlayersScreen(
         EditPlayerDialog(
             player = player,
             onDismiss = { editingPlayer = null },
-            onConfirm = { newName ->
-                viewModel.updatePlayerName(player, newName)
-                editingPlayer = null
-            }
+            onConfirm = { newName -> viewModel.updatePlayerName(player, newName) }
         )
     }
 
