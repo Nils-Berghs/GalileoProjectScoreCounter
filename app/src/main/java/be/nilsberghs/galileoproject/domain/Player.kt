@@ -1,4 +1,4 @@
-package be.nilsberghs.galileoproject.data
+package be.nilsberghs.galileoproject.domain
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -9,7 +9,7 @@ data class Player(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    @ColumnInfo(collate = ColumnInfo.NOCASE)
+    @ColumnInfo(collate = ColumnInfo.Companion.NOCASE)
     val name: String,
     val isDeleted: Boolean = false,
 ) {

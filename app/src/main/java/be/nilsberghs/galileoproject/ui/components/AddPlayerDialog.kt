@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import be.nilsberghs.galileoproject.R
-import be.nilsberghs.galileoproject.data.Player
+import be.nilsberghs.galileoproject.domain.Player
 import be.nilsberghs.galileoproject.util.AddPlayerResult
 import kotlinx.coroutines.launch
 

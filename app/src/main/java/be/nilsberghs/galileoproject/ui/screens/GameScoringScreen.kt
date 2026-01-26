@@ -52,8 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
-import be.nilsberghs.galileoproject.data.Player
-import be.nilsberghs.galileoproject.data.ScoreEntry
+import be.nilsberghs.galileoproject.domain.Player
+import be.nilsberghs.galileoproject.domain.ScoreEntry
 import be.nilsberghs.galileoproject.ui.theme.CallistoBrown
 import be.nilsberghs.galileoproject.ui.theme.EuropaYellow
 import be.nilsberghs.galileoproject.ui.theme.GanymedeGrey

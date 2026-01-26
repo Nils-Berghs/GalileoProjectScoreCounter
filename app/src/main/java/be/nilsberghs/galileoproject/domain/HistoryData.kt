@@ -1,4 +1,4 @@
-package be.nilsberghs.galileoproject.data
+package be.nilsberghs.galileoproject.domain
 
 import androidx.room.Embedded
 import androidx.room.Relation
