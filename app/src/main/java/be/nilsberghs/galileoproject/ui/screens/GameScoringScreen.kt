@@ -354,7 +354,7 @@ fun ScoreInputCell(
     LaunchedEffect(value, textFieldValue) {
         delay(500L)
         if ((textFieldValue.text.toIntOrNull() ?: 0) != value) {
-            val newText = if (value == 0) "" else value.toString()
+            val newText = if (value == 0) "0" else value.toString()
             textFieldValue = TextFieldValue(
                 text = newText,
                 selection = TextRange(newText.length) // Reset cursor to the end
@@ -365,6 +365,14 @@ fun ScoreInputCell(
     TextField(
         value = textFieldValue,
         onValueChange = { newValue ->    // Only update if input is empty or a valid number
+            val raw = newValue.text
+
+            if (raw.isEmpty() || raw == "0") {
+                textFieldValue = newValue
+                onValueChange(0)
+                return@TextField
+            }
+
             val text = newValue.text.trimStart('0')
             if (text.isEmpty() || text.toIntOrNull() != null) {
 
