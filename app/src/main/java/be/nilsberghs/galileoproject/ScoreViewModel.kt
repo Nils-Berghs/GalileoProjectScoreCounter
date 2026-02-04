@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
-import be.nilsberghs.galileoproject.util.AddPlayerResult
+import be.nilsberghs.galileoproject.domain.AddPlayerResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
