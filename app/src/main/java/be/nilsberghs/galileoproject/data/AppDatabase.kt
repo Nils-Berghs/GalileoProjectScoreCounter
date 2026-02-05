@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import be.nilsberghs.galileoproject.domain.Game
+import be.nilsberghs.galileoproject.domain.Player
+import be.nilsberghs.galileoproject.domain.ScoreEntry
 
 @Database(entities = [Player::class, Game::class, ScoreEntry::class], version = 6, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {

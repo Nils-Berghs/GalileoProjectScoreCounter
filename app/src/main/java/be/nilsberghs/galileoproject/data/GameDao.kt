@@ -1,11 +1,15 @@
 package be.nilsberghs.galileoproject.data
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Transaction
+import be.nilsberghs.galileoproject.domain.Game
+import be.nilsberghs.galileoproject.domain.GameHistory
+import be.nilsberghs.galileoproject.domain.Player
+import be.nilsberghs.galileoproject.domain.ScoreEntry
+import be.nilsberghs.galileoproject.domain.ScoreWithPlayer
 import kotlinx.coroutines.flow.Flow
 
 @Dao

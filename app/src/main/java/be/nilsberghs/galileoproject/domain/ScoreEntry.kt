@@ -1,4 +1,4 @@
-package be.nilsberghs.galileoproject.data
+package be.nilsberghs.galileoproject.domain
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -7,7 +7,12 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "scores",
     foreignKeys = [
-        ForeignKey(entity = Game::class, parentColumns = ["id"], childColumns = ["gameId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(
+            entity = Game::class,
+            parentColumns = ["id"],
+            childColumns = ["gameId"],
+            onDelete = ForeignKey.Companion.CASCADE
+        ),
         ForeignKey(entity = Player::class, parentColumns = ["id"], childColumns = ["playerId"])
     ]
 )
@@ -27,5 +32,3 @@ data class ScoreEntry(
     // Helper to calculate the total for this player
     val total: Int get() = io + europa + ganymede + callisto + technologies + achievements + assistants
 }
-
-

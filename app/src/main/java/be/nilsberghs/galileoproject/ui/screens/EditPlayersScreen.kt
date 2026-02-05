@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
-import be.nilsberghs.galileoproject.data.Player
+import be.nilsberghs.galileoproject.domain.Player
 import be.nilsberghs.galileoproject.ui.components.AddPlayerDialog
 import be.nilsberghs.galileoproject.ui.components.EditPlayerDialog
 

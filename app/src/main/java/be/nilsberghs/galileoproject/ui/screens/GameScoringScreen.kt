@@ -1,14 +1,19 @@
 package be.nilsberghs.galileoproject.ui.screens
 
+import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -52,8 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import be.nilsberghs.galileoproject.R
 import be.nilsberghs.galileoproject.ScoreViewModel
-import be.nilsberghs.galileoproject.data.Player
-import be.nilsberghs.galileoproject.data.ScoreEntry
+import be.nilsberghs.galileoproject.domain.Player
+import be.nilsberghs.galileoproject.domain.ScoreEntry
 import be.nilsberghs.galileoproject.ui.theme.CallistoBrown
 import be.nilsberghs.galileoproject.ui.theme.EuropaYellow
 import be.nilsberghs.galileoproject.ui.theme.GanymedeGrey
@@ -230,6 +235,7 @@ fun GameScoringContent(
             modifier = modifier
                 .fillMaxSize()
                 .padding(8.dp)
+                .then(scrollModifier)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(Modifier.weight(0.7f))
@@ -246,76 +252,84 @@ fun GameScoringContent(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), thickness = 1.dp)
 
-            categories.forEach { cat ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .padding(vertical = 2.dp)
-                ) {
-                    val iconPainter = painterResource(id = cat.resId)
-
-                    Icon(
-                        painter = iconPainter,
-                        contentDescription = cat.name,
-                        tint = cat.color ?: Color.Unspecified,
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .consumeWindowInsets(WindowInsets.ime) // <‑‑ important
+                    .verticalScroll(rememberScrollState())
+            ) {
+                categories.forEach { cat ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .size(60.dp)
-                            .weight(0.6f)
-                    )
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .padding(vertical = 2.dp)
+                    ) {
+                        val iconPainter = painterResource(id = cat.resId)
 
+                        Icon(
+                            painter = iconPainter,
+                            contentDescription = cat.name,
+                            tint = cat.color ?: Color.Unspecified,
+                            modifier = Modifier
+                                .size(60.dp)
+                                .weight(0.6f)
+                        )
+
+                        players.forEach { player ->
+                            val scoreEntry = scores.find { it.playerId == player.id }
+
+                            if (scoreEntry != null) {
+                                ScoreInputCell(
+                                    value = getVal(scoreEntry, cat.id),
+                                    onValueChange = { newValue ->
+                                        onScoreChange(scoreEntry, cat.id, newValue)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight(),
+                                    enabled = !isReadOnly
+                                )
+                            } else {
+                                Spacer(Modifier.weight(1f))
+                            }
+                        }
+                    }
+                }
+
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.DragHandle,
+                        contentDescription = stringResource(R.string.total_score),
+                        modifier = Modifier
+                            .weight(0.7f)
+                            .size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                     players.forEach { player ->
                         val scoreEntry = scores.find { it.playerId == player.id }
-
-                        if (scoreEntry != null) {
-                            ScoreInputCell(
-                                value = getVal(scoreEntry, cat.id),
-                                onValueChange = { newValue ->
-                                    onScoreChange(scoreEntry, cat.id, newValue)
-                                },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight(),
-                                enabled = !isReadOnly
-                            )
-                        } else {
-                            Spacer(Modifier.weight(1f))
-                        }
+                        Text(
+                            text = scoreEntry?.total?.toString() ?: "0",
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
                     }
                 }
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.DragHandle,
-                    contentDescription = stringResource(R.string.total_score),
-                    modifier = Modifier
-                        .weight(0.7f)
-                        .size(24.dp),
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-                players.forEach { player ->
-                    val scoreEntry = scores.find { it.playerId == player.id }
-                    Text(
-                        text = scoreEntry?.total?.toString() ?: "0",
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
+            //Spacer(modifier = Modifier.weight(1f))
 
 
 
             Button(
                 onClick = onFinishGame,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().imePadding(), // <‑‑ apply IME padding ONLY here,
                 enabled = canFinish
             ) {
                 Text(if (isReadOnly) stringResource(R.string.action_back) else stringResource(R.string.action_finish_game))
@@ -340,7 +354,7 @@ fun ScoreInputCell(
     LaunchedEffect(value, textFieldValue) {
         delay(500L)
         if ((textFieldValue.text.toIntOrNull() ?: 0) != value) {
-            val newText = if (value == 0) "" else value.toString()
+            val newText = if (value == 0) "0" else value.toString()
             textFieldValue = TextFieldValue(
                 text = newText,
                 selection = TextRange(newText.length) // Reset cursor to the end
@@ -351,6 +365,14 @@ fun ScoreInputCell(
     TextField(
         value = textFieldValue,
         onValueChange = { newValue ->    // Only update if input is empty or a valid number
+            val raw = newValue.text
+
+            if (raw.isEmpty() || raw == "0") {
+                textFieldValue = newValue
+                onValueChange(0)
+                return@TextField
+            }
+
             val text = newValue.text.trimStart('0')
             if (text.isEmpty() || text.toIntOrNull() != null) {
 

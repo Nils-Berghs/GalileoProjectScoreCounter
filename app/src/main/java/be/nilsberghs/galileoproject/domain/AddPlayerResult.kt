@@ -1,6 +1,4 @@
-package be.nilsberghs.galileoproject.util
-
-import be.nilsberghs.galileoproject.data.Player
+package be.nilsberghs.galileoproject.domain
 
 sealed class AddPlayerResult {
     object Success : AddPlayerResult()
